@@ -13,6 +13,7 @@ import com.example.goalapp.data.*
 @Composable
 fun ProfileSetupScreen(onComplete: (UserProfile) -> Unit) {
     var step by remember { mutableStateOf(1) }
+    val totalSteps = 8
     
     // Form State
     var livingSituation by remember { mutableStateOf(LivingSituation.OTHER) }
@@ -38,59 +39,80 @@ fun ProfileSetupScreen(onComplete: (UserProfile) -> Unit) {
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
             LinearProgressIndicator(
-                progress = { step / 3f },
+                progress = { step / totalSteps.toFloat() },
                 modifier = Modifier.fillMaxWidth(),
             )
 
             when (step) {
                 1 -> {
                     Text("Let's get to know you", style = MaterialTheme.typography.headlineSmall)
-                    
                     ProfileOptionSection("Who do you live with?", LivingSituation.entries, livingSituation) { livingSituation = it as LivingSituation }
-                    
-                    ProfileOptionSection("Do you enjoy being around people?", listOf("Yes", "Sometimes", "No"), socialEnjoyment) { socialEnjoyment = it as String }
-
-                    ProfileOptionSection("How often do you exercise?", ExerciseFrequency.entries, exerciseFrequency) { exerciseFrequency = it as ExerciseFrequency }
                 }
                 2 -> {
+                    Text("Let's get to know you", style = MaterialTheme.typography.headlineSmall)
+                    ProfileOptionSection("Do you enjoy being around people?", listOf("Yes", "Sometimes", "No"), socialEnjoyment) { socialEnjoyment = it as String }
+                }
+                3 -> {
+                    Text("Let's get to know you", style = MaterialTheme.typography.headlineSmall)
+                    ProfileOptionSection("How often do you exercise?", ExerciseFrequency.entries, exerciseFrequency) { exerciseFrequency = it as ExerciseFrequency }
+                }
+                4 -> {
                     Text("Life & Preferences", style = MaterialTheme.typography.headlineSmall)
-
                     ProfileOptionSection("Current situation?", EmploymentStatus.entries, employmentStatus) { employmentStatus = it as EmploymentStatus }
-
+                }
+                5 -> {
+                    Text("Life & Preferences", style = MaterialTheme.typography.headlineSmall)
                     ProfileOptionSection("Typical budget for activities?", BudgetPreference.entries, budgetPreference) { budgetPreference = it as BudgetPreference }
-
+                }
+                6 -> {
+                    Text("Life & Preferences", style = MaterialTheme.typography.headlineSmall)
                     ProfileMultiSelectSection("What usually stops you?", Obstacle.entries, selectedObstacles) { obstacle ->
                         val item = obstacle as Obstacle
                         selectedObstacles = if (selectedObstacles.contains(item)) selectedObstacles - item else selectedObstacles + item
                     }
                 }
-                3 -> {
+                7 -> {
                     Text("Interests & Goals", style = MaterialTheme.typography.headlineSmall)
-
                     ProfileMultiSelectSection("What do you enjoy?", Interest.entries, selectedInterests) { interest ->
                         val item = interest as Interest
                         selectedInterests = if (selectedInterests.contains(item)) selectedInterests - item else selectedInterests + item
                     }
-
+                }
+                8 -> {
+                    Text("Interests & Goals", style = MaterialTheme.typography.headlineSmall)
                     ProfileOptionSection("Goal should help me...", GoalFocus.entries, focus) { focus = it as GoalFocus }
                 }
             }
 
             Spacer(modifier = Modifier.weight(1f))
 
-            Button(
-                onClick = {
-                    if (step < 3) step++ else {
-                        onComplete(UserProfile(
-                            livingSituation, socialEnjoyment, exerciseFrequency, 
-                            employmentStatus, budgetPreference, selectedInterests.toList(), 
-                            selectedObstacles.toList(), focus
-                        ))
-                    }
-                },
-                modifier = Modifier.fillMaxWidth().height(56.dp)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                Text(if (step < 3) "Next" else "Finish")
+                if (step > 1) {
+                    OutlinedButton(
+                        onClick = { step-- },
+                        modifier = Modifier.weight(1f).height(56.dp)
+                    ) {
+                        Text("Back")
+                    }
+                }
+
+                Button(
+                    onClick = {
+                        if (step < totalSteps) step++ else {
+                            onComplete(UserProfile(
+                                livingSituation, socialEnjoyment, exerciseFrequency, 
+                                employmentStatus, budgetPreference, selectedInterests.toList(), 
+                                selectedObstacles.toList(), focus
+                            ))
+                        }
+                    },
+                    modifier = Modifier.weight(1f).height(56.dp)
+                ) {
+                    Text(if (step < totalSteps) "Next" else "Finish")
+                }
             }
         }
     }
