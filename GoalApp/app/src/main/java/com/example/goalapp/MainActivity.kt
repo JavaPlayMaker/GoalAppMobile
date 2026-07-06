@@ -7,7 +7,6 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.navigation.compose.*
-import com.example.goalapp.data.ActivityRepository
 import com.example.goalapp.data.UserCheckIn
 import com.example.goalapp.data.UserProfile
 import com.example.goalapp.ui.screens.*
@@ -82,15 +81,9 @@ fun GoalAppNavigation() {
         
         composable("recommendation") {
             lastCheckIn?.let { checkIn ->
-                // Use profile for personalized recommendation
-                val activity = ActivityRepository.getRecommendation(checkIn, userProfile ?: UserProfile())
                 RecommendationScreen(
-                    activity = activity,
-                    onTryAnother = {
-                        navController.navigate("recommendation") {
-                            popUpTo("recommendation") { inclusive = true }
-                        }
-                    },
+                    checkIn = checkIn,
+                    profile = userProfile ?: UserProfile(),
                     onDone = {
                         navController.navigate("home") {
                             popUpTo("home") { inclusive = false }
