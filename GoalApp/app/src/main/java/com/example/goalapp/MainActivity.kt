@@ -64,9 +64,24 @@ fun GoalAppNavigation() {
         
         composable("home") {
             HomeScreen(
-                onFindIdea = { navController.navigate("checkin") },
+                onLearn = { navController.navigate("learn") },
+                onGoal = { navController.navigate("checkin") },
+                onGame = { navController.navigate("game") },
+                onJournal = { navController.navigate("journal") },
                 onSettings = { navController.navigate("settings") }
             )
+        }
+        
+        composable("learn") {
+            LearnScreen(onBack = { navController.popBackStack() })
+        }
+
+        composable("game") {
+            GameScreen(onBack = { navController.popBackStack() })
+        }
+
+        composable("journal") {
+            JournalScreen(onBack = { navController.popBackStack() })
         }
         
         composable("checkin") {

@@ -7,13 +7,15 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
-    onFindIdea: () -> Unit,
+    onLearn: () -> Unit,
+    onGoal: () -> Unit,
+    onGame: () -> Unit,
+    onJournal: () -> Unit,
     onSettings: () -> Unit
 ) {
     Scaffold(
@@ -33,31 +35,38 @@ fun HomeScreen(
                 .fillMaxSize()
                 .padding(innerPadding)
                 .padding(24.dp),
-            verticalArrangement = Arrangement.Center,
+            verticalArrangement = Arrangement.spacedBy(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "Goal",
-                style = MaterialTheme.typography.displayMedium
+                text = "Welcome",
+                style = MaterialTheme.typography.displaySmall
             )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = "Small ideas for when you want to do something, but don't know what.",
-                style = MaterialTheme.typography.bodyLarge,
-                textAlign = TextAlign.Center,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+            
+            Spacer(modifier = Modifier.height(16.dp))
+
+            val menuItems = listOf(
+                "Learn" to onLearn,
+                "Goal" to onGoal,
+                "Game" to onGame,
+                "Journal" to onJournal
             )
-            Spacer(modifier = Modifier.height(48.dp))
-            Button(
-                onClick = onFindIdea,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp)
-            ) {
-                Text("Find an Idea")
+
+            menuItems.forEach { (label, action) ->
+                Button(
+                    onClick = action,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(72.dp),
+                    shape = MaterialTheme.shapes.large
+                ) {
+                    Text(
+                        text = label,
+                        style = MaterialTheme.typography.titleLarge
+                    )
+                }
             }
             
-            // Placeholder for future illustrations
             Spacer(modifier = Modifier.weight(1f))
         }
     }
