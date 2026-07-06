@@ -106,6 +106,53 @@ enum class GoalFocus(val displayName: String) {
     RELAX("Relax and unwind")
 }
 
+enum class LocationType(val displayName: String) {
+    HOME("Home"),
+    OUTDOORS("Outdoors"),
+    INDOORS_PUBLIC("Public indoors"),
+    WATER("Near or in water"),
+    ANYWHERE("Anywhere")
+}
+
+enum class WeatherPreference(val displayName: String) {
+    ANY("Any weather"),
+    SUNNY("Sunny"),
+    RAINY("Rainy"),
+    SNOW("Snow"),
+    INDOOR_ONLY("Indoor only")
+}
+
+enum class ActivityIntensity(val displayName: String) {
+    VERY_LIGHT("Very light"),
+    LIGHT("Light"),
+    MODERATE("Moderate"),
+    HIGH("High")
+}
+
+enum class Equipment(val displayName: String) {
+    BICYCLE("Bicycle"),
+    PHONE("Phone"),
+    COMPUTER("Computer"),
+    SWIMWEAR("Swimwear"),
+    HEADPHONES("Headphones"),
+    CAMERA("Camera"),
+    BOOK("Book"),
+    SPORTS_CLOTHES("Sports clothes")
+}
+
+enum class ActivityTag(val displayName: String) {
+    RELAXING("Relaxing"),
+    PRODUCTIVE("Productive"),
+    CREATIVE("Creative"),
+    SOCIAL("Social"),
+    OUTDOORS("Outdoors"),
+    EXERCISE("Exercise"),
+    LEARNING("Learning"),
+    GAMING("Gaming"),
+    MINDFULNESS("Mindfulness"),
+    EXPLORATION("Exploration")
+}
+
 data class UserProfile(
     val livingSituation: LivingSituation = LivingSituation.OTHER,
     val socialEnjoyment: String = "Sometimes", // Yes, Sometimes, No
@@ -114,7 +161,7 @@ data class UserProfile(
     val budgetPreference: BudgetPreference = BudgetPreference.NO_PREFERENCE,
     val interests: List<Interest> = emptyList(),
     val obstacles: List<Obstacle> = emptyList(),
-    val focus: GoalFocus = GoalFocus.FIND_DO
+    val focus: GoalFocus = GoalFocus.FIND_DO,
 )
 
 data class GoalActivity(
@@ -126,7 +173,13 @@ data class GoalActivity(
     val socialPreference: SocialPreference,
     val maxTimeMinutes: Int,
     val interests: List<Interest> = emptyList(),
-    val isFree: Boolean = true
+    val minTimeMinutes: Int = 0,
+    val isFree: Boolean = true,
+    val location: LocationType = LocationType.ANYWHERE,
+    val weather: WeatherPreference = WeatherPreference.ANY,
+    val intensity: ActivityIntensity = ActivityIntensity.LIGHT,
+    val equipment: List<Equipment> = emptyList(),
+    val tags: List<ActivityTag> = emptyList()
 )
 
 data class UserCheckIn(
