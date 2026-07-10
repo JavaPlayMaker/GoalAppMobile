@@ -188,3 +188,8 @@ data class UserCheckIn(
     val socialPreference: SocialPreference,
     val timeAvailable: TimeAvailable
 )
+
+data class JournalEntry(
+    val date: Long, // Epoch millis
+    val content: String
+)

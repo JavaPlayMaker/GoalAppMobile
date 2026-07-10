@@ -45,8 +45,11 @@ fun LearnScreen(onBack: () -> Unit) {
                 onClick = { /* coming soon */ }
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
-                    Text(text = "Being Alone", style = MaterialTheme.typography.titleMedium)
-                    Text(text = "Understand the difference between solitude and loneliness.", style = MaterialTheme.typography.bodySmall)
+                    Text(text = "The Art of Being Alone", style = MaterialTheme.typography.titleMedium)
+                    Text(
+                        text = "Solitude is a strength. It's a time to recharge, reflect, and discover yourself without external noise. Learning to be comfortable in your own company is the first step toward genuine confidence.",
+                        style = MaterialTheme.typography.bodySmall
+                    )
                 }
             }
 
