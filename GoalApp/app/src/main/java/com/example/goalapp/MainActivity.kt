@@ -6,7 +6,9 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.navigation.NavType
 import androidx.navigation.compose.*
+import androidx.navigation.navArgument
 import com.example.goalapp.data.UserCheckIn
 import com.example.goalapp.data.UserProfile
 import com.example.goalapp.ui.screens.*
@@ -43,11 +45,45 @@ fun GoalAppNavigation() {
     ) {
         composable("onboarding") {
             OnboardingScreen(
-                onNavigateToHome = {
+                onContinueGuest = {
                     navController.navigate("profile_setup") {
                         popUpTo("onboarding") { inclusive = true }
                     }
+                },
+                onCreateAccount = {
+                    navController.navigate("auth")
                 }
+            )
+        }
+
+        composable("auth") {
+            AuthScreen(
+                onEmailSent = { email ->
+                    navController.navigate("verify/$email")
+                },
+                onGoogleSignIn = {
+                    // Simulated Google Sign In
+                    navController.navigate("profile_setup") {
+                        popUpTo("onboarding") { inclusive = true }
+                    }
+                },
+                onBack = { navController.popBackStack() }
+            )
+        }
+
+        composable(
+            "verify/{email}",
+            arguments = listOf(navArgument("email") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val email = backStackEntry.arguments?.getString("email") ?: ""
+            EmailVerificationScreen(
+                email = email,
+                onVerified = {
+                    navController.navigate("profile_setup") {
+                        popUpTo("onboarding") { inclusive = true }
+                    }
+                },
+                onResend = { /* Logic to resend email */ }
             )
         }
 

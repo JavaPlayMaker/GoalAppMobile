@@ -7,9 +7,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
-fun OnboardingScreen(onNavigateToHome: () -> Unit) {
+fun OnboardingScreen(
+    onContinueGuest: () -> Unit,
+    onCreateAccount: () -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -31,14 +35,14 @@ fun OnboardingScreen(onNavigateToHome: () -> Unit) {
         )
         Spacer(modifier = Modifier.height(48.dp))
         Button(
-            onClick = onNavigateToHome,
+            onClick = onContinueGuest,
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Continue without an account")
         }
         Spacer(modifier = Modifier.height(16.dp))
         OutlinedButton(
-            onClick = onNavigateToHome,
+            onClick = onCreateAccount,
             modifier = Modifier.fillMaxWidth()
         ) {
             Text("Create an account")
@@ -51,4 +55,10 @@ fun OnboardingScreen(onNavigateToHome: () -> Unit) {
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun OnboardingScreenPreview() {
+    OnboardingScreen(onContinueGuest = {}, onCreateAccount = {})
 }

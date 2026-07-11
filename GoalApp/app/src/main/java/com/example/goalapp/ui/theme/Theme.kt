@@ -11,23 +11,45 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
-    primary = PrimaryDark,
-    onPrimary = OnPrimaryDark,
-    secondary = SecondaryDark,
-    onSecondary = OnSecondaryDark,
-    tertiary = TertiaryDark,
+    primary = BluePrimaryDark,
+    onPrimary = BlueOnPrimaryDark,
+    primaryContainer = BluePrimaryContainerDark,
+    onPrimaryContainer = BlueOnPrimaryContainerDark,
+    secondary = PinkSecondaryDark,
+    onSecondary = PinkOnSecondaryDark,
+    secondaryContainer = PinkSecondaryContainerDark,
+    onSecondaryContainer = PinkOnSecondaryContainerDark,
+    tertiary = GreenTertiaryDark,
+    onTertiary = GreenOnTertiaryDark,
+    tertiaryContainer = GreenTertiaryContainerDark,
+    onTertiaryContainer = GreenOnTertiaryContainerDark,
+    background = BackgroundDark,
+    onBackground = OnBackgroundDark,
     surface = SurfaceDark,
-    onSurface = OnSurfaceDark
+    onSurface = OnSurfaceDark,
+    error = Error,
+    onError = OnError
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = PrimaryLight,
-    onPrimary = OnPrimaryLight,
-    secondary = SecondaryLight,
-    onSecondary = OnSecondaryLight,
-    tertiary = TertiaryLight,
+    primary = BluePrimary,
+    onPrimary = BlueOnPrimary,
+    primaryContainer = BluePrimaryContainer,
+    onPrimaryContainer = BlueOnPrimaryContainer,
+    secondary = PinkSecondary,
+    onSecondary = PinkOnSecondary,
+    secondaryContainer = PinkSecondaryContainer,
+    onSecondaryContainer = PinkOnSecondaryContainer,
+    tertiary = GreenTertiary,
+    onTertiary = GreenOnTertiary,
+    tertiaryContainer = GreenTertiaryContainer,
+    onTertiaryContainer = GreenOnTertiaryContainer,
+    background = BackgroundLight,
+    onBackground = OnBackgroundLight,
     surface = SurfaceLight,
-    onSurface = OnSurfaceLight
+    onSurface = OnSurfaceLight,
+    error = Error,
+    onError = OnError
 )
 
 @Composable

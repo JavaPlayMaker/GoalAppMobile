@@ -2,26 +2,49 @@ package com.example.goalapp.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-// Calm & Warm Palette
-val SoftGreen = Color(0xFFE8F5E9)
-val DeepGreen = Color(0xFF2E7D32)
-val SoftBlue = Color(0xFFE3F2FD)
-val DeepBlue = Color(0xFF1565C0)
-val SoftPeach = Color(0xFFFFF3E0)
-val WarmBrown = Color(0xFF5D4037)
+// Modern Blue, Pink, and Green Palette
 
-val PrimaryLight = Color(0xFF4CAF50)
-val OnPrimaryLight = Color.White
-val SecondaryLight = Color(0xFF03A9F4)
-val OnSecondaryLight = Color.White
-val TertiaryLight = Color(0xFFFF9800)
-val SurfaceLight = Color(0xFFFFFBFE)
-val OnSurfaceLight = Color(0xFF1C1B1F)
+// Light Mode Colors
+val BluePrimary = Color(0xFF1976D2)
+val BlueOnPrimary = Color(0xFFFFFFFF)
+val BluePrimaryContainer = Color(0xFFD1E4FF)
+val BlueOnPrimaryContainer = Color(0xFF001D36)
 
-val PrimaryDark = Color(0xFF81C784)
-val OnPrimaryDark = Color(0xFF1B5E20)
-val SecondaryDark = Color(0xFF64B5F6)
-val OnSecondaryDark = Color(0xFF0D47A1)
-val TertiaryDark = Color(0xFFFFB74D)
-val SurfaceDark = Color(0xFF1C1B1F)
-val OnSurfaceDark = Color(0xFFFFFBFE)
+val PinkSecondary = Color(0xFFE91E63)
+val PinkOnSecondary = Color(0xFFFFFFFF)
+val PinkSecondaryContainer = Color(0xFFFFD9E2)
+val PinkOnSecondaryContainer = Color(0xFF3E001D)
+
+val GreenTertiary = Color(0xFF2E7D32)
+val GreenOnTertiary = Color(0xFFFFFFFF)
+val GreenTertiaryContainer = Color(0xFFB1F1B0)
+val GreenOnTertiaryContainer = Color(0xFF002204)
+
+val Error = Color(0xFFBA1A1A)
+val OnError = Color(0xFFFFFFFF)
+
+val BackgroundLight = Color(0xFFFFF0F5) // Lavender Blush (Soft Pink)
+val OnBackgroundLight = Color(0xFF1A1C1E)
+val SurfaceLight = Color(0xFFFFF0F5)
+val OnSurfaceLight = Color(0xFF1A1C1E)
+
+// Dark Mode Colors
+val BluePrimaryDark = Color(0xFF9ECAFF)
+val BlueOnPrimaryDark = Color(0xFF003258)
+val BluePrimaryContainerDark = Color(0xFF00497D)
+val BlueOnPrimaryContainerDark = Color(0xFFD1E4FF)
+
+val PinkSecondaryDark = Color(0xFFFFB1C1)
+val PinkOnSecondaryDark = Color(0xFF66002A)
+val PinkSecondaryContainerDark = Color(0xFF8E003D)
+val PinkOnSecondaryContainerDark = Color(0xFFFFD9E2)
+
+val GreenTertiaryDark = Color(0xFF96D596)
+val GreenOnTertiaryDark = Color(0xFF00390A)
+val GreenTertiaryContainerDark = Color(0xFF005313)
+val GreenOnTertiaryContainerDark = Color(0xFFB1F1B0)
+
+val BackgroundDark = Color(0xFF1A1C1E)
+val OnBackgroundDark = Color(0xFFE2E2E6)
+val SurfaceDark = Color(0xFF1A1C1E)
+val OnSurfaceDark = Color(0xFFE2E2E6)
