@@ -1,72 +1,57 @@
 package com.example.goalapp.ui.theme
 
-import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.dynamicDarkColorScheme
-import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
-    primary = BluePrimaryDark,
-    onPrimary = BlueOnPrimaryDark,
-    primaryContainer = BluePrimaryContainerDark,
-    onPrimaryContainer = BlueOnPrimaryContainerDark,
-    secondary = PinkSecondaryDark,
-    onSecondary = PinkOnSecondaryDark,
-    secondaryContainer = PinkSecondaryContainerDark,
-    onSecondaryContainer = PinkOnSecondaryContainerDark,
-    tertiary = GreenTertiaryDark,
-    onTertiary = GreenOnTertiaryDark,
-    tertiaryContainer = GreenTertiaryContainerDark,
-    onTertiaryContainer = GreenOnTertiaryContainerDark,
+    primary = AppBlue,
+    onPrimary = AppWhite,
+    secondary = AppBlue,
+    onSecondary = AppWhite,
+    tertiary = AppBlue,
+    onTertiary = AppWhite,
     background = BackgroundDark,
     onBackground = OnBackgroundDark,
     surface = SurfaceDark,
     onSurface = OnSurfaceDark,
-    error = Error,
-    onError = OnError
+    surfaceVariant = AppBlue,
+    onSurfaceVariant = AppWhite,
+    primaryContainer = AppBlue,
+    onPrimaryContainer = AppWhite,
+    secondaryContainer = AppBlue,
+    onSecondaryContainer = AppWhite
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = BluePrimary,
-    onPrimary = BlueOnPrimary,
-    primaryContainer = BluePrimaryContainer,
-    onPrimaryContainer = BlueOnPrimaryContainer,
-    secondary = PinkSecondary,
-    onSecondary = PinkOnSecondary,
-    secondaryContainer = PinkSecondaryContainer,
-    onSecondaryContainer = PinkOnSecondaryContainer,
-    tertiary = GreenTertiary,
-    onTertiary = GreenOnTertiary,
-    tertiaryContainer = GreenTertiaryContainer,
-    onTertiaryContainer = GreenOnTertiaryContainer,
+    primary = AppBlue,
+    onPrimary = AppWhite,
+    secondary = AppBlue,
+    onSecondary = AppWhite,
+    tertiary = AppBlue,
+    onTertiary = AppWhite,
     background = BackgroundLight,
     onBackground = OnBackgroundLight,
     surface = SurfaceLight,
     onSurface = OnSurfaceLight,
-    error = Error,
-    onError = OnError
+    surfaceVariant = AppBlue,
+    onSurfaceVariant = AppWhite,
+    primaryContainer = AppBlue,
+    onPrimaryContainer = AppWhite,
+    secondaryContainer = AppBlue,
+    onSecondaryContainer = AppWhite
 )
 
 @Composable
 fun GoalAppTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
     dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
-    val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-        }
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
-    }
+    val colorScheme = if (darkTheme) DarkColorScheme else LightColorScheme
+    // Ignoring dynamicColor to maintain strict design system as requested
 
     MaterialTheme(
         colorScheme = colorScheme,

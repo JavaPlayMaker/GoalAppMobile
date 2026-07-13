@@ -8,6 +8,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.example.goalapp.data.*
 
@@ -23,14 +24,23 @@ fun CheckInScreen(
     var time by remember { mutableStateOf(TimeAvailable.THIRTY_MINUTES) }
 
     Scaffold(
+        containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             TopAppBar(
-                title = { Text("Check-in") },
+                title = { Text("Check-in", color = MaterialTheme.colorScheme.onBackground) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack, 
+                            contentDescription = "Back",
+                            tint = MaterialTheme.colorScheme.onBackground
+                        )
                     }
-                }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.Transparent,
+                    titleContentColor = MaterialTheme.colorScheme.onBackground
+                )
             )
         }
     ) { innerPadding ->
@@ -53,7 +63,12 @@ fun CheckInScreen(
                 onClick = {
                     onRecommendation(UserCheckIn(mood, energy, social, time))
                 },
-                modifier = Modifier.fillMaxWidth().height(56.dp)
+                modifier = Modifier.fillMaxWidth().height(56.dp),
+                shape = MaterialTheme.shapes.large,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = Color.White
+                )
             ) {
                 Text("Get Suggestion")
             }
@@ -70,7 +85,7 @@ fun QuestionSection(
     onSelect: (Any) -> Unit
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        Text(text = title, style = MaterialTheme.typography.titleMedium)
+        Text(text = title, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onBackground)
         FlowRow(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -84,11 +99,20 @@ fun QuestionSection(
                     is TimeAvailable -> option.displayName
                     else -> option.toString()
                 }
-                FilterChip(
-                    selected = option == selected,
+                
+                val isSelected = option == selected
+                
+                Button(
                     onClick = { onSelect(option) },
-                    label = { Text(label) }
-                )
+                    shape = MaterialTheme.shapes.medium,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = if (isSelected) MaterialTheme.colorScheme.primary else Color.White,
+                        contentColor = if (isSelected) Color.White else Color(0xFF2D2D2D)
+                    ),
+                    modifier = Modifier.height(40.dp)
+                ) {
+                    Text(label)
+                }
             }
         }
     }

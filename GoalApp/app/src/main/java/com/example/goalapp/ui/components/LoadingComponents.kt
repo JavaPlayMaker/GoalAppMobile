@@ -21,14 +21,14 @@ fun LoadingOverlay() {
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             CircularProgressIndicator(
-                color = MaterialTheme.colorScheme.primary,
+                color = Color.White,
                 strokeWidth = 4.dp
             )
             Spacer(modifier = Modifier.height(16.dp))
             Text(
                 text = "Finding your next goal...",
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onBackground
+                color = Color.White
             )
         }
     }

@@ -6,6 +6,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.example.goalapp.data.*
 
@@ -26,8 +27,23 @@ fun ProfileSetupScreen(onComplete: (UserProfile) -> Unit) {
     var focus by remember { mutableStateOf(GoalFocus.FIND_DO) }
 
     Scaffold(
+        containerColor = MaterialTheme.colorScheme.background,
         topBar = {
-            CenterAlignedTopAppBar(title = { Text("About You") })
+            Column {
+                LinearProgressIndicator(
+                    progress = { step / totalSteps.toFloat() },
+                    modifier = Modifier.fillMaxWidth().height(4.dp),
+                    color = MaterialTheme.colorScheme.primary,
+                    trackColor = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.1f)
+                )
+                CenterAlignedTopAppBar(
+                    title = { Text("About You", color = MaterialTheme.colorScheme.onBackground) },
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = Color.Transparent,
+                        titleContentColor = MaterialTheme.colorScheme.onBackground
+                    )
+                )
+            }
         }
     ) { innerPadding ->
         Column(
@@ -38,48 +54,43 @@ fun ProfileSetupScreen(onComplete: (UserProfile) -> Unit) {
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
-            LinearProgressIndicator(
-                progress = { step / totalSteps.toFloat() },
-                modifier = Modifier.fillMaxWidth(),
-            )
-
             when (step) {
                 1 -> {
-                    Text("Let's get to know you", style = MaterialTheme.typography.headlineSmall)
+                    Text("Let's get to know you", style = MaterialTheme.typography.headlineSmall, color = MaterialTheme.colorScheme.onBackground)
                     ProfileOptionSection("Who do you live with?", LivingSituation.entries, livingSituation) { livingSituation = it as LivingSituation }
                 }
                 2 -> {
-                    Text("Let's get to know you", style = MaterialTheme.typography.headlineSmall)
+                    Text("Let's get to know you", style = MaterialTheme.typography.headlineSmall, color = MaterialTheme.colorScheme.onBackground)
                     ProfileOptionSection("Do you enjoy being around people?", listOf("Yes", "Sometimes", "No"), socialEnjoyment) { socialEnjoyment = it as String }
                 }
                 3 -> {
-                    Text("Let's get to know you", style = MaterialTheme.typography.headlineSmall)
+                    Text("Let's get to know you", style = MaterialTheme.typography.headlineSmall, color = MaterialTheme.colorScheme.onBackground)
                     ProfileOptionSection("How often do you exercise?", ExerciseFrequency.entries, exerciseFrequency) { exerciseFrequency = it as ExerciseFrequency }
                 }
                 4 -> {
-                    Text("Life & Preferences", style = MaterialTheme.typography.headlineSmall)
+                    Text("Life & Preferences", style = MaterialTheme.typography.headlineSmall, color = MaterialTheme.colorScheme.onBackground)
                     ProfileOptionSection("Current situation?", EmploymentStatus.entries, employmentStatus) { employmentStatus = it as EmploymentStatus }
                 }
                 5 -> {
-                    Text("Life & Preferences", style = MaterialTheme.typography.headlineSmall)
+                    Text("Life & Preferences", style = MaterialTheme.typography.headlineSmall, color = MaterialTheme.colorScheme.onBackground)
                     ProfileOptionSection("Typical budget for activities?", BudgetPreference.entries, budgetPreference) { budgetPreference = it as BudgetPreference }
                 }
                 6 -> {
-                    Text("Life & Preferences", style = MaterialTheme.typography.headlineSmall)
+                    Text("Life & Preferences", style = MaterialTheme.typography.headlineSmall, color = MaterialTheme.colorScheme.onBackground)
                     ProfileMultiSelectSection("What usually stops you?", Obstacle.entries, selectedObstacles) { obstacle ->
                         val item = obstacle as Obstacle
                         selectedObstacles = if (selectedObstacles.contains(item)) selectedObstacles - item else selectedObstacles + item
                     }
                 }
                 7 -> {
-                    Text("Interests & Goals", style = MaterialTheme.typography.headlineSmall)
+                    Text("Interests & Goals", style = MaterialTheme.typography.headlineSmall, color = MaterialTheme.colorScheme.onBackground)
                     ProfileMultiSelectSection("What do you enjoy?", Interest.entries, selectedInterests) { interest ->
                         val item = interest as Interest
                         selectedInterests = if (selectedInterests.contains(item)) selectedInterests - item else selectedInterests + item
                     }
                 }
                 8 -> {
-                    Text("Interests & Goals", style = MaterialTheme.typography.headlineSmall)
+                    Text("Interests & Goals", style = MaterialTheme.typography.headlineSmall, color = MaterialTheme.colorScheme.onBackground)
                     ProfileOptionSection("Goal should help me...", GoalFocus.entries, focus) { focus = it as GoalFocus }
                 }
             }
@@ -91,9 +102,14 @@ fun ProfileSetupScreen(onComplete: (UserProfile) -> Unit) {
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 if (step > 1) {
-                    OutlinedButton(
+                    Button(
                         onClick = { step-- },
-                        modifier = Modifier.weight(1f).height(56.dp)
+                        modifier = Modifier.weight(1f).height(56.dp),
+                        shape = MaterialTheme.shapes.extraLarge,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.White,
+                            contentColor = Color(0xFF2D2D2D)
+                        )
                     ) {
                         Text("Back")
                     }
@@ -109,7 +125,12 @@ fun ProfileSetupScreen(onComplete: (UserProfile) -> Unit) {
                             ))
                         }
                     },
-                    modifier = Modifier.weight(1f).height(56.dp)
+                    modifier = Modifier.weight(1f).height(56.dp),
+                    shape = MaterialTheme.shapes.extraLarge,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = Color.White
+                    )
                 ) {
                     Text(if (step < totalSteps) "Next" else "Finish")
                 }
@@ -120,8 +141,8 @@ fun ProfileSetupScreen(onComplete: (UserProfile) -> Unit) {
 
 @Composable
 fun ProfileOptionSection(title: String, options: List<Any>, selected: Any, onSelect: (Any) -> Unit) {
-    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        Text(text = title, style = MaterialTheme.typography.titleMedium)
+    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        Text(text = title, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onBackground)
         options.forEach { option ->
             val label = when (option) {
                 is LivingSituation -> option.displayName
@@ -131,10 +152,17 @@ fun ProfileOptionSection(title: String, options: List<Any>, selected: Any, onSel
                 is GoalFocus -> option.displayName
                 else -> option.toString()
             }
-            OutlinedButton(
+            
+            val isSelected = option == selected
+            
+            Button(
                 onClick = { onSelect(option) },
-                modifier = Modifier.fillMaxWidth(),
-                colors = if (option == selected) ButtonDefaults.outlinedButtonColors(containerColor = MaterialTheme.colorScheme.primaryContainer) else ButtonDefaults.outlinedButtonColors()
+                modifier = Modifier.fillMaxWidth().height(56.dp),
+                shape = MaterialTheme.shapes.extraLarge,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = if (isSelected) MaterialTheme.colorScheme.primary else Color.White,
+                    contentColor = if (isSelected) Color.White else Color(0xFF2D2D2D)
+                )
             ) {
                 Text(label)
             }
@@ -145,8 +173,8 @@ fun ProfileOptionSection(title: String, options: List<Any>, selected: Any, onSel
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun ProfileMultiSelectSection(title: String, options: List<Any>, selected: Set<Any>, onToggle: (Any) -> Unit) {
-    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        Text(text = title, style = MaterialTheme.typography.titleMedium)
+    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        Text(text = title, style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.onBackground)
         FlowRow(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -158,11 +186,20 @@ fun ProfileMultiSelectSection(title: String, options: List<Any>, selected: Set<A
                     is Obstacle -> option.displayName
                     else -> option.toString()
                 }
-                FilterChip(
-                    selected = selected.contains(option),
+                
+                val isSelected = selected.contains(option)
+                
+                Button(
                     onClick = { onToggle(option) },
-                    label = { Text(label) }
-                )
+                    shape = MaterialTheme.shapes.extraLarge,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = if (isSelected) MaterialTheme.colorScheme.primary else Color.White,
+                        contentColor = if (isSelected) Color.White else Color(0xFF2D2D2D)
+                    ),
+                    modifier = Modifier.height(48.dp)
+                ) {
+                    Text(label)
+                }
             }
         }
     }

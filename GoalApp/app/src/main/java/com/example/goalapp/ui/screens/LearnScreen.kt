@@ -1,5 +1,6 @@
 package com.example.goalapp.ui.screens
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -9,9 +10,12 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.goalapp.R
 
 enum class LearnPage {
     MAIN, HOW_TO_DEAL, TOPIC_DETAIL
@@ -58,6 +62,7 @@ fun LearnScreen(onBack: () -> Unit) {
     var selectedTopic by remember { mutableStateOf<Topic?>(null) }
 
     Scaffold(
+        containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             TopAppBar(
                 title = { 
@@ -66,7 +71,8 @@ fun LearnScreen(onBack: () -> Unit) {
                             LearnPage.MAIN -> "Learn"
                             LearnPage.HOW_TO_DEAL -> "How to Deal"
                             LearnPage.TOPIC_DETAIL -> selectedTopic?.title ?: "Details"
-                        }
+                        },
+                        color = Color.White
                     ) 
                 },
                 navigationIcon = {
@@ -77,9 +83,17 @@ fun LearnScreen(onBack: () -> Unit) {
                             LearnPage.TOPIC_DETAIL -> currentPage = LearnPage.HOW_TO_DEAL
                         }
                     }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack, 
+                            contentDescription = "Back",
+                            tint = Color.White
+                        )
                     }
-                }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    titleContentColor = Color.White
+                )
             )
         }
     ) { innerPadding ->
@@ -111,34 +125,49 @@ fun MainLearnMenu(onNavigate: (LearnPage) -> Unit) {
     ) {
         Text(
             text = "What would you like to explore?",
-            style = MaterialTheme.typography.headlineSmall
+            style = MaterialTheme.typography.headlineSmall,
+            color = Color.White
         )
         
         Spacer(modifier = Modifier.height(16.dp))
 
-        OutlinedCard(
-            modifier = Modifier.fillMaxWidth(),
-            onClick = { /* coming soon or simple toast */ }
-        ) {
-            Column(modifier = Modifier.padding(16.dp)) {
-                Text(text = "The Art of Being Alone", style = MaterialTheme.typography.titleMedium)
-                Text(
-                    text = "Solitude is a strength. It's a time to recharge and discover yourself.",
-                    style = MaterialTheme.typography.bodySmall
-                )
-            }
-        }
+        LearnCard(
+            title = "The Art of Being Alone",
+            description = "Solitude is a strength. It's a time to recharge and discover yourself.",
+            imageRes = R.drawable.phblue,
+            onClick = {}
+        )
 
-        OutlinedCard(
-            modifier = Modifier.fillMaxWidth(),
+        LearnCard(
+            title = "How to Deal With It",
+            description = "Practical strategies for managing difficult moments.",
+            imageRes = R.drawable.phpink,
             onClick = { onNavigate(LearnPage.HOW_TO_DEAL) }
-        ) {
+        )
+    }
+}
+
+@Composable
+fun LearnCard(title: String, description: String, imageRes: Int, onClick: () -> Unit) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        onClick = onClick,
+        shape = MaterialTheme.shapes.large,
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.primary,
+            contentColor = Color.White
+        )
+    ) {
+        Column {
+            Image(
+                painter = painterResource(id = imageRes),
+                contentDescription = null,
+                modifier = Modifier.fillMaxWidth().height(120.dp),
+                contentScale = androidx.compose.ui.layout.ContentScale.Crop
+            )
             Column(modifier = Modifier.padding(16.dp)) {
-                Text(text = "How to Deal With It", style = MaterialTheme.typography.titleMedium)
-                Text(
-                    text = "Practical strategies for managing difficult moments.",
-                    style = MaterialTheme.typography.bodySmall
-                )
+                Text(text = title, style = MaterialTheme.typography.titleMedium, color = Color.White)
+                Text(text = description, style = MaterialTheme.typography.bodySmall, color = Color.White)
             }
         }
     }
@@ -157,17 +186,23 @@ fun HowToDealMenu(onSelectTopic: (Topic) -> Unit) {
         Text(
             text = "Strategies for Solitude",
             style = MaterialTheme.typography.titleLarge,
+            color = Color.White,
             modifier = Modifier.padding(bottom = 8.dp)
         )
 
         topics.forEach { topic ->
-            ElevatedCard(
+            Card(
                 modifier = Modifier.fillMaxWidth(),
-                onClick = { onSelectTopic(topic) }
+                onClick = { onSelectTopic(topic) },
+                shape = MaterialTheme.shapes.large,
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = Color.White
+                )
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
-                    Text(text = topic.title, style = MaterialTheme.typography.titleMedium)
-                    Text(text = topic.description, style = MaterialTheme.typography.bodySmall)
+                    Text(text = topic.title, style = MaterialTheme.typography.titleMedium, color = Color.White)
+                    Text(text = topic.description, style = MaterialTheme.typography.bodySmall, color = Color.White)
                 }
             }
         }
@@ -184,12 +219,13 @@ fun TopicDetailView(topic: Topic?) {
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Text(text = it.title, style = MaterialTheme.typography.headlineMedium)
-            HorizontalDivider()
+            Text(text = it.title, style = MaterialTheme.typography.headlineMedium, color = Color.White)
+            HorizontalDivider(color = Color.White.copy(alpha = 0.5f))
             Text(
                 text = it.content,
                 style = MaterialTheme.typography.bodyLarge,
-                lineHeight = 28.sp
+                lineHeight = 28.sp,
+                color = Color.White
             )
             
             Spacer(modifier = Modifier.height(32.dp))
@@ -197,7 +233,7 @@ fun TopicDetailView(topic: Topic?) {
             Text(
                 text = "Small steps make a big difference.",
                 style = MaterialTheme.typography.labelMedium,
-                color = MaterialTheme.colorScheme.primary
+                color = Color.White
             )
         }
     }
