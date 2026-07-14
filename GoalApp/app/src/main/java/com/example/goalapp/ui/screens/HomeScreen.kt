@@ -14,6 +14,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.goalapp.R
 
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.ui.platform.LocalContext
+import com.example.goalapp.ui.utils.MusicManager
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
@@ -23,6 +27,17 @@ fun HomeScreen(
     onJournal: () -> Unit,
     onSettings: () -> Unit
 ) {
+    val context = LocalContext.current
+    
+    DisposableEffect(Unit) {
+        if (MusicManager.isMusicEnabled(context)) {
+            MusicManager.start(context)
+        }
+        onDispose {
+            MusicManager.stop()
+        }
+    }
+
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
