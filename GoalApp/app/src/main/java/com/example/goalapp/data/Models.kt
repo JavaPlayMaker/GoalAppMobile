@@ -167,19 +167,7 @@ data class UserProfile(
 data class GoalActivity(
     val name: String,
     val whyFits: String,
-    val firstStep: String,
-    val moods: List<Mood>,
-    val minEnergy: EnergyLevel,
-    val socialPreference: SocialPreference,
-    val maxTimeMinutes: Int,
-    val interests: List<Interest> = emptyList(),
-    val minTimeMinutes: Int = 0,
-    val isFree: Boolean = true,
-    val location: LocationType = LocationType.ANYWHERE,
-    val weather: WeatherPreference = WeatherPreference.ANY,
-    val intensity: ActivityIntensity = ActivityIntensity.LIGHT,
-    val equipment: List<Equipment> = emptyList(),
-    val tags: List<ActivityTag> = emptyList()
+    val firstStep: String
 )
 
 data class UserCheckIn(
