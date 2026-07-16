@@ -129,14 +129,19 @@ fun GameCard(title: String, description: String, imageRes: Int, onClick: () -> U
         )
     ) {
         Column {
+            Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(120.dp),
+            contentAlignment = Alignment.Center
+        ) {
             Image(
                 painter = painterResource(id = imageRes),
                 contentDescription = null,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(120.dp),
-                contentScale = ContentScale.Crop
+                modifier = Modifier.height(100.dp),
+                contentScale = ContentScale.Fit
             )
+        }
             Column(modifier = Modifier.padding(16.dp)) {
                 Text(text = title, style = MaterialTheme.typography.titleMedium, color = Color.White)
                 Text(text = description, style = MaterialTheme.typography.bodySmall, color = Color.White)

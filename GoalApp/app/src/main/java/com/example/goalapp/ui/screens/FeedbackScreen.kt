@@ -114,14 +114,19 @@ fun MoodFeedbackPage(onNext: () -> Unit) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Image(
-            painter = painterResource(id = R.drawable.phpink),
-            contentDescription = null,
+        Box(
             modifier = Modifier
                 .size(250.dp)
                 .padding(bottom = 32.dp),
-            contentScale = ContentScale.Fit
-        )
+            contentAlignment = Alignment.Center
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.phpink),
+                contentDescription = null,
+                modifier = Modifier.size(180.dp),
+                contentScale = ContentScale.Fit
+            )
+        }
 
         Text(
             text = "Are you feeling better?",

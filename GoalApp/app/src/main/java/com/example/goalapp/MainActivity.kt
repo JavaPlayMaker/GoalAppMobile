@@ -9,6 +9,10 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.*
 import androidx.navigation.navArgument
 import androidx.compose.ui.platform.LocalContext
+import com.example.goalapp.data.EnergyLevel
+import com.example.goalapp.data.Mood
+import com.example.goalapp.data.SocialPreference
+import com.example.goalapp.data.TimeAvailable
 import com.example.goalapp.data.UserCheckIn
 import com.example.goalapp.data.UserProfile
 import com.example.goalapp.data.prefs.PreferenceManager
@@ -134,7 +138,15 @@ fun GoalAppNavigation() {
         composable("home") {
             HomeScreen(
                 onLearn = { navController.navigate("learn") },
-                onGoal = { navController.navigate("checkin") },
+                onGoal = { 
+                    lastCheckIn = UserCheckIn(
+                        mood = Mood.JUST_WANT_SOMETHING_TO_DO,
+                        energyLevel = EnergyLevel.MEDIUM,
+                        socialPreference = SocialPreference.EITHER,
+                        timeAvailable = TimeAvailable.THIRTY_MINUTES
+                    )
+                    navController.navigate("recommendation") 
+                },
                 onGame = { navController.navigate("game") },
                 onJournal = { navController.navigate("journal") },
                 onSettings = { navController.navigate("settings") }
@@ -189,16 +201,6 @@ fun GoalAppNavigation() {
                     }
                 }
             })
-        }
-        
-        composable("checkin") {
-            CheckInScreen(
-                onRecommendation = { checkIn ->
-                    lastCheckIn = checkIn
-                    navController.navigate("recommendation")
-                },
-                onBack = { navController.popBackStack() }
-            )
         }
         
         composable("recommendation") {
