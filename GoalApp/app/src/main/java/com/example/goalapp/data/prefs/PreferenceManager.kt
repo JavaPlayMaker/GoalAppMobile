@@ -17,6 +17,24 @@ class PreferenceManager(context: Context) {
         private const val KEY_INTERESTS = "interests"
         private const val KEY_OBSTACLES = "obstacles"
         private const val KEY_FOCUS = "focus"
+        private const val KEY_DONE_COUNT = "done_count"
+        private const val KEY_FEEDBACK_SHOWN = "feedback_shown"
+    }
+
+    fun getDoneCount(): Int = prefs.getInt(KEY_DONE_COUNT, 0)
+
+    fun incrementDoneCount() {
+        prefs.edit { putInt(KEY_DONE_COUNT, getDoneCount() + 1) }
+    }
+
+    fun resetDoneCount() {
+        prefs.edit { putInt(KEY_DONE_COUNT, 0) }
+    }
+
+    fun isFeedbackFlowShown(): Boolean = prefs.getBoolean(KEY_FEEDBACK_SHOWN, false)
+
+    fun setFeedbackFlowShown(shown: Boolean) {
+        prefs.edit { putBoolean(KEY_FEEDBACK_SHOWN, shown) }
     }
 
     fun isProfileCompleted(): Boolean {

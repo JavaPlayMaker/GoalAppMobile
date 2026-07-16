@@ -29,7 +29,7 @@ enum class GameType {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun GameScreen(onBack: () -> Unit) {
+fun GameScreen(onBack: () -> Unit, onDone: () -> Unit = {}) {
     var activeGame by remember { mutableStateOf(GameType.NONE) }
 
     Scaffold(
@@ -71,8 +71,14 @@ fun GameScreen(onBack: () -> Unit) {
         ) {
             when (activeGame) {
                 GameType.NONE -> GameSelectionMenu(onSelect = { activeGame = it })
-                GameType.DEEP_BREATH -> DeepBreathGame(onDone = { activeGame = GameType.NONE })
-                GameType.POP_BALLOON -> PopBalloonGame(onDone = { activeGame = GameType.NONE })
+                GameType.DEEP_BREATH -> DeepBreathGame(onDone = { 
+                    onDone()
+                    activeGame = GameType.NONE 
+                })
+                GameType.POP_BALLOON -> PopBalloonGame(onDone = { 
+                    onDone()
+                    activeGame = GameType.NONE 
+                })
             }
         }
     }

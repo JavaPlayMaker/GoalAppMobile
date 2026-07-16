@@ -18,13 +18,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.example.goalapp.R
 
 enum class LearnPage {
-    MAIN, HOW_TO_DEAL, TOPIC_DETAIL
+    MAIN, HOW_TO_DEAL, TOPIC_DETAIL, ART_OF_ALONE
 }
 
 data class Topic(
     val title: String,
     val description: String,
-    val content: String
+    val content: String,
 )
 
 val topics = listOf(
@@ -57,7 +57,7 @@ val topics = listOf(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LearnScreen(onBack: () -> Unit) {
+fun LearnScreen(onBack: () -> Unit, onDone: () -> Unit = {}) {
     var currentPage by remember { mutableStateOf(LearnPage.MAIN) }
     var selectedTopic by remember { mutableStateOf<Topic?>(null) }
 
@@ -71,6 +71,7 @@ fun LearnScreen(onBack: () -> Unit) {
                             LearnPage.MAIN -> "Learn"
                             LearnPage.HOW_TO_DEAL -> "How to Deal"
                             LearnPage.TOPIC_DETAIL -> selectedTopic?.title ?: "Details"
+                            LearnPage.ART_OF_ALONE -> "The Art of Being Alone"
                         },
                         color = Color.White
                     ) 
@@ -81,6 +82,7 @@ fun LearnScreen(onBack: () -> Unit) {
                             LearnPage.MAIN -> onBack()
                             LearnPage.HOW_TO_DEAL -> currentPage = LearnPage.MAIN
                             LearnPage.TOPIC_DETAIL -> currentPage = LearnPage.HOW_TO_DEAL
+                            LearnPage.ART_OF_ALONE -> currentPage = LearnPage.MAIN
                         }
                     }) {
                         Icon(
@@ -103,12 +105,19 @@ fun LearnScreen(onBack: () -> Unit) {
                 .padding(innerPadding)
         ) {
             when (currentPage) {
-                LearnPage.MAIN -> MainLearnMenu(onNavigate = { currentPage = it })
-                LearnPage.HOW_TO_DEAL -> HowToDealMenu(onSelectTopic = {
+                LearnPage.MAIN -> MainLearnMenu { currentPage = it }
+                LearnPage.HOW_TO_DEAL -> HowToDealMenu {
                     selectedTopic = it
                     currentPage = LearnPage.TOPIC_DETAIL
-                })
-                LearnPage.TOPIC_DETAIL -> TopicDetailView(selectedTopic, onDone = { currentPage = LearnPage.HOW_TO_DEAL })
+                }
+                LearnPage.TOPIC_DETAIL -> TopicDetailView(selectedTopic) { 
+                    onDone()
+                    currentPage = LearnPage.HOW_TO_DEAL 
+                }
+                LearnPage.ART_OF_ALONE -> ArtOfAloneView {
+                    onDone()
+                    currentPage = LearnPage.MAIN
+                }
             }
         }
     }
@@ -135,7 +144,7 @@ fun MainLearnMenu(onNavigate: (LearnPage) -> Unit) {
             title = "The Art of Being Alone",
             description = "Solitude is a strength. It's a time to recharge and discover yourself.",
             imageRes = R.drawable.phblue,
-            onClick = {}
+            onClick = { onNavigate(LearnPage.ART_OF_ALONE) }
         )
 
         LearnCard(
@@ -250,6 +259,60 @@ fun TopicDetailView(topic: Topic?, onDone: () -> Unit) {
                 Text("Done")
             }
         }
+    }
+}
+
+@Composable
+fun ArtOfAloneView(onDone: () -> Unit) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(24.dp)
+            .verticalScroll(rememberScrollState()),
+        verticalArrangement = Arrangement.spacedBy(24.dp)
+    ) {
+        Text(
+            text = "Solitude is an opportunity to reconnect with the most important person in your life: yourself.",
+            style = MaterialTheme.typography.titleLarge,
+            color = Color.White
+        )
+
+        ArtOfAloneItem(
+            title = "1. Observe",
+            content = "Find a quiet spot and simply notice. What sounds do you hear? What colors catch your eye? Observing without judging grounds you in the present."
+        )
+
+        ArtOfAloneItem(
+            title = "2. Document",
+            content = "Keep a small notebook or use your journal. Write down one thought that usually passes you by. Capturing these fleeting moments helps you understand your inner dialogue."
+        )
+
+        ArtOfAloneItem(
+            title = "3. Unplug",
+            content = "Spend 10 minutes without any screens. No phone, no TV, no music. The initial restlessness is normal; sit with it until you find the stillness underneath."
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Button(
+            onClick = onDone,
+            modifier = Modifier.fillMaxWidth().height(56.dp),
+            shape = MaterialTheme.shapes.large,
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = Color.White
+            )
+        ) {
+            Text("Done")
+        }
+    }
+}
+
+@Composable
+fun ArtOfAloneItem(title: String, content: String) {
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Text(text = title, style = MaterialTheme.typography.titleMedium, color = Color.White, fontWeight = androidx.compose.ui.text.font.FontWeight.Bold)
+        Text(text = content, style = MaterialTheme.typography.bodyLarge, color = Color.White, lineHeight = 24.sp)
     }
 }
 

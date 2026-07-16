@@ -45,23 +45,6 @@ fun JournalScreen(onBack: () -> Unit) {
                         )
                     }
                 },
-                actions = {
-                    if (!showDatePicker) {
-                        Button(
-                            onClick = { 
-                                journalEntries[selectedDate] = journalText
-                                showDatePicker = true 
-                            },
-                            modifier = Modifier.padding(end = 8.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = MaterialTheme.colorScheme.primary,
-                                contentColor = Color.White
-                            )
-                        ) {
-                            Text("Save")
-                        }
-                    }
-                },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Color.Transparent,
                     titleContentColor = MaterialTheme.colorScheme.onBackground
@@ -172,7 +155,10 @@ fun JournalScreen(onBack: () -> Unit) {
                     Spacer(modifier = Modifier.height(16.dp))
                     
                     TextButton(
-                        onClick = { showDatePicker = true },
+                        onClick = { 
+                            journalEntries[selectedDate] = journalText
+                            showDatePicker = true 
+                        },
                         colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.onBackground)
                     ) {
                         Text("Change Date")

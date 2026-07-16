@@ -42,6 +42,15 @@ fun GoalAppNavigation() {
     var lastCheckIn by remember { mutableStateOf<UserCheckIn?>(null) }
     var userProfile by remember { mutableStateOf(preferenceManager.getUserProfile()) }
 
+    val handleDone: (() -> Unit) -> Unit = { onNoTrigger ->
+        preferenceManager.incrementDoneCount()
+        if (preferenceManager.getDoneCount() >= 3) {
+            navController.navigate("feedback")
+        } else {
+            onNoTrigger()
+        }
+    }
+
     NavHost(
         navController = navController,
         startDestination = if (userProfile != null) "home" else "onboarding"
@@ -131,15 +140,53 @@ fun GoalAppNavigation() {
         }
         
         composable("learn") {
-            LearnScreen(onBack = { navController.popBackStack() })
+            LearnScreen(
+                onBack = {
+                    if (navController.previousBackStackEntry != null && 
+                        navController.previousBackStackEntry?.destination?.route != "home") {
+                        navController.popBackStack()
+                    } else {
+                        navController.navigate("home") {
+                            popUpTo("home") { inclusive = false }
+                        }
+                    }
+                },
+                onDone = {
+                    handleDone {
+                        // Stay in LearnScreen (it handles its own state change internally)
+                    }
+                }
+            )
         }
 
         composable("game") {
-            GameScreen(onBack = { navController.popBackStack() })
+            GameScreen(
+                onBack = {
+                    if (navController.previousBackStackEntry != null && 
+                        navController.previousBackStackEntry?.destination?.route != "home") {
+                        navController.popBackStack()
+                    } else {
+                        navController.navigate("home") {
+                            popUpTo("home") { inclusive = false }
+                        }
+                    }
+                },
+                onDone = {
+                    handleDone {
+                        // Stay in GameScreen
+                    }
+                }
+            )
         }
 
         composable("journal") {
-            JournalScreen(onBack = { navController.popBackStack() })
+            JournalScreen(onBack = { 
+                handleDone {
+                    navController.navigate("home") {
+                        popUpTo("home") { inclusive = false }
+                    }
+                }
+            })
         }
         
         composable("checkin") {
@@ -158,8 +205,10 @@ fun GoalAppNavigation() {
                     checkIn = checkIn,
                     profile = userProfile ?: UserProfile(),
                     onDone = {
-                        navController.navigate("home") {
-                            popUpTo("home") { inclusive = false }
+                        handleDone {
+                            navController.navigate("home") {
+                                popUpTo("home") { inclusive = false }
+                            }
                         }
                     }
                 )
@@ -168,6 +217,17 @@ fun GoalAppNavigation() {
         
         composable("settings") {
             SettingsScreen(onBack = { navController.popBackStack() })
+        }
+
+        composable("feedback") {
+            FeedbackScreen(
+                onDismiss = {
+                    preferenceManager.resetDoneCount()
+                    navController.navigate("home") {
+                        popUpTo("feedback") { inclusive = true }
+                    }
+                }
+            )
         }
     }
 }
