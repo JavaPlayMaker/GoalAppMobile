@@ -108,7 +108,7 @@ fun LearnScreen(onBack: () -> Unit) {
                     selectedTopic = it
                     currentPage = LearnPage.TOPIC_DETAIL
                 })
-                LearnPage.TOPIC_DETAIL -> TopicDetailView(selectedTopic)
+                LearnPage.TOPIC_DETAIL -> TopicDetailView(selectedTopic, onDone = { currentPage = LearnPage.HOW_TO_DEAL })
             }
         }
     }
@@ -210,7 +210,7 @@ fun HowToDealMenu(onSelectTopic: (Topic) -> Unit) {
 }
 
 @Composable
-fun TopicDetailView(topic: Topic?) {
+fun TopicDetailView(topic: Topic?, onDone: () -> Unit) {
     topic?.let {
         Column(
             modifier = Modifier
@@ -235,6 +235,20 @@ fun TopicDetailView(topic: Topic?) {
                 style = MaterialTheme.typography.labelMedium,
                 color = Color.White
             )
+
+            Spacer(modifier = Modifier.height(32.dp))
+
+            Button(
+                onClick = onDone,
+                modifier = Modifier.fillMaxWidth().height(56.dp),
+                shape = MaterialTheme.shapes.large,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = Color.White
+                )
+            ) {
+                Text("Done")
+            }
         }
     }
 }

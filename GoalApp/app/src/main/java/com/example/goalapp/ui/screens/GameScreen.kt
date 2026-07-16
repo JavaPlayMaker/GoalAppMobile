@@ -71,8 +71,8 @@ fun GameScreen(onBack: () -> Unit) {
         ) {
             when (activeGame) {
                 GameType.NONE -> GameSelectionMenu(onSelect = { activeGame = it })
-                GameType.DEEP_BREATH -> DeepBreathGame()
-                GameType.POP_BALLOON -> PopBalloonGame()
+                GameType.DEEP_BREATH -> DeepBreathGame(onDone = { activeGame = GameType.NONE })
+                GameType.POP_BALLOON -> PopBalloonGame(onDone = { activeGame = GameType.NONE })
             }
         }
     }
@@ -140,7 +140,7 @@ fun GameCard(title: String, description: String, imageRes: Int, onClick: () -> U
 }
 
 @Composable
-fun DeepBreathGame() {
+fun DeepBreathGame(onDone: () -> Unit) {
     val infiniteTransition = rememberInfiniteTransition(label = "breathing")
     val scale by infiniteTransition.animateFloat(
         initialValue = 1f,
@@ -155,7 +155,7 @@ fun DeepBreathGame() {
     val text = if (scale > 1.5f) "Exhale..." else "Inhale..."
 
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize().padding(24.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -173,7 +173,7 @@ fun DeepBreathGame() {
             )
         }
         
-        Spacer(modifier = Modifier.height(100.dp))
+        Spacer(modifier = Modifier.height(60.dp))
         
         Text(
             text = text,
@@ -181,6 +181,20 @@ fun DeepBreathGame() {
             fontWeight = FontWeight.Bold,
             color = Color.White
         )
+
+        Spacer(modifier = Modifier.height(100.dp))
+
+        Button(
+            onClick = onDone,
+            modifier = Modifier.fillMaxWidth().height(56.dp),
+            shape = MaterialTheme.shapes.large,
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = Color.White
+            )
+        ) {
+            Text("Done")
+        }
     }
 }
 
@@ -191,7 +205,7 @@ data class Balloon(
 )
 
 @Composable
-fun PopBalloonGame() {
+fun PopBalloonGame(onDone: () -> Unit) {
     var score by remember { mutableStateOf(0) }
     var balloons by remember { mutableStateOf(emptyList<Balloon>()) }
     var gameActive by remember { mutableStateOf(true) }
@@ -211,7 +225,7 @@ fun PopBalloonGame() {
         }
     }
 
-    Column(modifier = Modifier.fillMaxSize()) {
+    Column(modifier = Modifier.fillMaxSize().padding(bottom = 24.dp)) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -226,7 +240,7 @@ fun PopBalloonGame() {
             )
         }
         
-        BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+        BoxWithConstraints(modifier = Modifier.weight(1f).fillMaxWidth()) {
             val width = maxWidth
             val height = maxHeight
             
@@ -253,6 +267,23 @@ fun PopBalloonGame() {
                     )
                 }
             }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Button(
+            onClick = {
+                gameActive = false
+                onDone()
+            },
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp).height(56.dp),
+            shape = MaterialTheme.shapes.large,
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = Color.White
+            )
+        ) {
+            Text("Done")
         }
     }
 }

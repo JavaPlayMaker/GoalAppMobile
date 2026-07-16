@@ -1,7 +1,6 @@
 package com.example.goalapp.ui.screens
 
 import androidx.compose.ui.graphics.Color
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -11,11 +10,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.goalapp.R
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -81,15 +77,6 @@ fun JournalScreen(onBack: () -> Unit) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             if (showDatePicker) {
-                Image(
-                    painter = painterResource(id = R.drawable.phblue),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(200.dp),
-                    contentScale = ContentScale.Crop
-                )
-                
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -189,6 +176,23 @@ fun JournalScreen(onBack: () -> Unit) {
                         colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.onBackground)
                     ) {
                         Text("Change Date")
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    Button(
+                        onClick = {
+                            journalEntries[selectedDate] = journalText
+                            onBack()
+                        },
+                        modifier = Modifier.fillMaxWidth().height(56.dp),
+                        shape = MaterialTheme.shapes.large,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            contentColor = Color.White
+                        )
+                    ) {
+                        Text("Done")
                     }
                 }
             }
