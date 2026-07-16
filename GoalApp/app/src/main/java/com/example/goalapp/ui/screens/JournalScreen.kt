@@ -10,14 +10,20 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.goalapp.data.prefs.PreferenceManager
+import com.example.goalapp.notifications.NotificationHelper
 import java.text.SimpleDateFormat
 import java.util.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun JournalScreen(onBack: () -> Unit) {
+    val context = LocalContext.current
+    val preferenceManager = remember { PreferenceManager(context) }
+    
     val datePickerState = rememberDatePickerState(
         initialSelectedDateMillis = System.currentTimeMillis()
     )
@@ -103,6 +109,21 @@ fun JournalScreen(onBack: () -> Unit) {
                         )
                     ) {
                         Text("Write for ${formatDate(selectedDate)}")
+                    }
+
+                    if (!preferenceManager.isJournalReminderEnabled()) {
+                        Spacer(modifier = Modifier.height(16.dp))
+                        OutlinedButton(
+                            onClick = {
+                                preferenceManager.setJournalReminderEnabled(true)
+                                val parts = preferenceManager.getJournalReminderTime().split(":")
+                                NotificationHelper.scheduleJournalReminder(context, parts[0].toInt(), parts[1].toInt())
+                            },
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = MaterialTheme.shapes.large
+                        ) {
+                            Text("Enable Journal Reminders")
+                        }
                     }
                 }
             } else {

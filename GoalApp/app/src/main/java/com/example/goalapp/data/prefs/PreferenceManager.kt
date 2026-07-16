@@ -19,6 +19,27 @@ class PreferenceManager(context: Context) {
         private const val KEY_FOCUS = "focus"
         private const val KEY_DONE_COUNT = "done_count"
         private const val KEY_FEEDBACK_SHOWN = "feedback_shown"
+        private const val KEY_JOURNAL_REMINDER_ENABLED = "journal_reminder_enabled"
+        private const val KEY_JOURNAL_REMINDER_TIME = "journal_reminder_time"
+        private const val KEY_INACTIVITY_NOTIFICATION_ENABLED = "inactivity_notification_enabled"
+    }
+
+    fun isJournalReminderEnabled(): Boolean = prefs.getBoolean(KEY_JOURNAL_REMINDER_ENABLED, false)
+
+    fun setJournalReminderEnabled(enabled: Boolean) {
+        prefs.edit { putBoolean(KEY_JOURNAL_REMINDER_ENABLED, enabled) }
+    }
+
+    fun getJournalReminderTime(): String = prefs.getString(KEY_JOURNAL_REMINDER_TIME, "20:00")!!
+
+    fun setJournalReminderTime(time: String) {
+        prefs.edit { putString(KEY_JOURNAL_REMINDER_TIME, time) }
+    }
+
+    fun isInactivityNotificationEnabled(): Boolean = prefs.getBoolean(KEY_INACTIVITY_NOTIFICATION_ENABLED, true)
+
+    fun setInactivityNotificationEnabled(enabled: Boolean) {
+        prefs.edit { putBoolean(KEY_INACTIVITY_NOTIFICATION_ENABLED, enabled) }
     }
 
     fun getDoneCount(): Int = prefs.getInt(KEY_DONE_COUNT, 0)

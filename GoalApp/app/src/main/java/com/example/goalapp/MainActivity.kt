@@ -12,6 +12,7 @@ import androidx.compose.ui.platform.LocalContext
 import com.example.goalapp.data.UserCheckIn
 import com.example.goalapp.data.UserProfile
 import com.example.goalapp.data.prefs.PreferenceManager
+import com.example.goalapp.notifications.NotificationHelper
 import com.example.goalapp.ui.screens.*
 import com.example.goalapp.ui.theme.GoalAppTheme
 
@@ -22,6 +23,7 @@ import com.example.goalapp.ui.theme.GoalAppTheme
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        NotificationHelper.createNotificationChannel(this)
         enableEdgeToEdge()
         setContent {
             GoalAppTheme {
