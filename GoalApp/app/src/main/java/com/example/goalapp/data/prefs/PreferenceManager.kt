@@ -1,0 +1,58 @@
+package com.example.goalapp.data.prefs
+
+import android.content.Context
+import androidx.core.content.edit
+import com.example.goalapp.data.*
+
+class PreferenceManager(context: Context) {
+    private val prefs = context.getSharedPreferences("goal_app_prefs", Context.MODE_PRIVATE)
+
+    companion object {
+        private const val KEY_PROFILE_COMPLETED = "profile_completed"
+        private const val KEY_LIVING_SITUATION = "living_situation"
+        private const val KEY_SOCIAL_ENJOYMENT = "social_enjoyment"
+        private const val KEY_EXERCISE_FREQUENCY = "exercise_frequency"
+        private const val KEY_EMPLOYMENT_STATUS = "employment_status"
+        private const val KEY_BUDGET_PREFERENCE = "budget_preference"
+        private const val KEY_INTERESTS = "interests"
+        private const val KEY_OBSTACLES = "obstacles"
+        private const val KEY_FOCUS = "focus"
+    }
+
+    fun isProfileCompleted(): Boolean {
+        return prefs.getBoolean(KEY_PROFILE_COMPLETED, false)
+    }
+
+    fun saveUserProfile(profile: UserProfile) {
+        prefs.edit {
+            putBoolean(KEY_PROFILE_COMPLETED, true)
+            putString(KEY_LIVING_SITUATION, profile.livingSituation.name)
+            putString(KEY_SOCIAL_ENJOYMENT, profile.socialEnjoyment)
+            putString(KEY_EXERCISE_FREQUENCY, profile.exerciseFrequency.name)
+            putString(KEY_EMPLOYMENT_STATUS, profile.employmentStatus.name)
+            putString(KEY_BUDGET_PREFERENCE, profile.budgetPreference.name)
+            putStringSet(KEY_INTERESTS, profile.interests.map { it.name }.toSet())
+            putStringSet(KEY_OBSTACLES, profile.obstacles.map { it.name }.toSet())
+            putString(KEY_FOCUS, profile.focus.name)
+        }
+    }
+
+    fun getUserProfile(): UserProfile? {
+        if (!isProfileCompleted()) return null
+        
+        return try {
+            UserProfile(
+                livingSituation = LivingSituation.valueOf(prefs.getString(KEY_LIVING_SITUATION, LivingSituation.OTHER.name)!!),
+                socialEnjoyment = prefs.getString(KEY_SOCIAL_ENJOYMENT, "Sometimes")!!,
+                exerciseFrequency = ExerciseFrequency.valueOf(prefs.getString(KEY_EXERCISE_FREQUENCY, ExerciseFrequency.RARELY.name)!!),
+                employmentStatus = EmploymentStatus.valueOf(prefs.getString(KEY_EMPLOYMENT_STATUS, EmploymentStatus.OTHER.name)!!),
+                budgetPreference = BudgetPreference.valueOf(prefs.getString(KEY_BUDGET_PREFERENCE, BudgetPreference.NO_PREFERENCE.name)!!),
+                interests = prefs.getStringSet(KEY_INTERESTS, emptySet())?.map { Interest.valueOf(it) } ?: emptyList(),
+                obstacles = prefs.getStringSet(KEY_OBSTACLES, emptySet())?.map { Obstacle.valueOf(it) } ?: emptyList(),
+                focus = GoalFocus.valueOf(prefs.getString(KEY_FOCUS, GoalFocus.FIND_DO.name)!!)
+            )
+        } catch (e: Exception) {
+            null
+        }
+    }
+}

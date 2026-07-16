@@ -8,8 +8,10 @@ import androidx.compose.runtime.*
 import androidx.navigation.NavType
 import androidx.navigation.compose.*
 import androidx.navigation.navArgument
+import androidx.compose.ui.platform.LocalContext
 import com.example.goalapp.data.UserCheckIn
 import com.example.goalapp.data.UserProfile
+import com.example.goalapp.data.prefs.PreferenceManager
 import com.example.goalapp.ui.screens.*
 import com.example.goalapp.ui.theme.GoalAppTheme
 
@@ -34,19 +36,27 @@ class MainActivity : ComponentActivity() {
  */
 @Composable
 fun GoalAppNavigation() {
+    val context = LocalContext.current
+    val preferenceManager = remember { PreferenceManager(context) }
     val navController = rememberNavController()
     var lastCheckIn by remember { mutableStateOf<UserCheckIn?>(null) }
-    var userProfile by remember { mutableStateOf<UserProfile?>(null) }
+    var userProfile by remember { mutableStateOf(preferenceManager.getUserProfile()) }
 
     NavHost(
         navController = navController,
-        startDestination = "onboarding"
+        startDestination = if (userProfile != null) "home" else "onboarding"
     ) {
         composable("onboarding") {
             OnboardingScreen(
                 onContinueGuest = {
-                    navController.navigate("profile_setup") {
-                        popUpTo("onboarding") { inclusive = true }
+                    if (preferenceManager.isProfileCompleted()) {
+                        navController.navigate("home") {
+                            popUpTo("onboarding") { inclusive = true }
+                        }
+                    } else {
+                        navController.navigate("profile_setup") {
+                            popUpTo("onboarding") { inclusive = true }
+                        }
                     }
                 },
                 onCreateAccount = {
@@ -62,8 +72,14 @@ fun GoalAppNavigation() {
                 },
                 onGoogleSignIn = {
                     // Simulated Google Sign In
-                    navController.navigate("profile_setup") {
-                        popUpTo("onboarding") { inclusive = true }
+                    if (preferenceManager.isProfileCompleted()) {
+                        navController.navigate("home") {
+                            popUpTo("onboarding") { inclusive = true }
+                        }
+                    } else {
+                        navController.navigate("profile_setup") {
+                            popUpTo("onboarding") { inclusive = true }
+                        }
                     }
                 },
                 onBack = { navController.popBackStack() }
@@ -78,8 +94,14 @@ fun GoalAppNavigation() {
             EmailVerificationScreen(
                 email = email,
                 onVerified = {
-                    navController.navigate("profile_setup") {
-                        popUpTo("onboarding") { inclusive = true }
+                    if (preferenceManager.isProfileCompleted()) {
+                        navController.navigate("home") {
+                            popUpTo("onboarding") { inclusive = true }
+                        }
+                    } else {
+                        navController.navigate("profile_setup") {
+                            popUpTo("onboarding") { inclusive = true }
+                        }
                     }
                 },
                 onResend = { /* Logic to resend email */ }
@@ -89,6 +111,7 @@ fun GoalAppNavigation() {
         composable("profile_setup") {
             ProfileSetupScreen(
                 onComplete = { profile ->
+                    preferenceManager.saveUserProfile(profile)
                     userProfile = profile
                     navController.navigate("home") {
                         popUpTo("profile_setup") { inclusive = true }
