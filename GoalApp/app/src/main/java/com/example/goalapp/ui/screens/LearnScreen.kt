@@ -6,19 +6,22 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.goalapp.R
+import com.example.goalapp.data.MissionManager
 
 enum class LearnPage {
-    MAIN, HOW_TO_DEAL, TOPIC_DETAIL, ART_OF_ALONE
+    MAIN, HOW_TO_DEAL, TOPIC_DETAIL, ART_OF_ALONE, ADVANCED_TIPS
 }
 
 data class Topic(
@@ -58,8 +61,12 @@ val topics = listOf(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LearnScreen(onBack: () -> Unit, onDone: () -> Unit = {}) {
+    val context = LocalContext.current
+    val missionManager = remember { MissionManager(context) }
     var currentPage by remember { mutableStateOf(LearnPage.MAIN) }
     var selectedTopic by remember { mutableStateOf<Topic?>(null) }
+    var isUnlocked by remember { mutableStateOf(missionManager.isLearnPageUnlocked()) }
+    var showUnlockError by remember { mutableStateOf(false) }
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
@@ -72,6 +79,7 @@ fun LearnScreen(onBack: () -> Unit, onDone: () -> Unit = {}) {
                             LearnPage.HOW_TO_DEAL -> "How to Deal"
                             LearnPage.TOPIC_DETAIL -> selectedTopic?.title ?: "Details"
                             LearnPage.ART_OF_ALONE -> "The Art of Being Alone"
+                            LearnPage.ADVANCED_TIPS -> "Advanced Daily Tips"
                         },
                         color = Color.White
                     ) 
@@ -83,6 +91,7 @@ fun LearnScreen(onBack: () -> Unit, onDone: () -> Unit = {}) {
                             LearnPage.HOW_TO_DEAL -> currentPage = LearnPage.MAIN
                             LearnPage.TOPIC_DETAIL -> currentPage = LearnPage.HOW_TO_DEAL
                             LearnPage.ART_OF_ALONE -> currentPage = LearnPage.MAIN
+                            LearnPage.ADVANCED_TIPS -> currentPage = LearnPage.MAIN
                         }
                     }) {
                         Icon(
@@ -118,6 +127,40 @@ fun LearnScreen(onBack: () -> Unit, onDone: () -> Unit = {}) {
                     onDone()
                     currentPage = LearnPage.MAIN
                 }
+                LearnPage.ADVANCED_TIPS -> {
+                    if (isUnlocked) {
+                        AdvancedTipsView {
+                            onDone()
+                            currentPage = LearnPage.MAIN
+                        }
+                    } else {
+                        LockedContentView(
+                            pointsRequired = 100,
+                            userPoints = missionManager.getTotalPoints(),
+                            onUnlock = {
+                                if (missionManager.spendPoints(100)) {
+                                    missionManager.unlockLearnPage()
+                                    isUnlocked = true
+                                } else {
+                                    showUnlockError = true
+                                }
+                            }
+                        )
+                    }
+                }
+            }
+
+            if (showUnlockError) {
+                AlertDialog(
+                    onDismissRequest = { showUnlockError = false },
+                    title = { Text("Not Enough Points") },
+                    text = { Text("You need at least 100 points to unlock this content. Complete more daily missions to earn points!") },
+                    confirmButton = {
+                        TextButton(onClick = { showUnlockError = false }) {
+                            Text("OK")
+                        }
+                    }
+                )
             }
         }
     }
@@ -128,7 +171,8 @@ fun MainLearnMenu(onNavigate: (LearnPage) -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(24.dp),
+            .padding(24.dp)
+            .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -153,6 +197,108 @@ fun MainLearnMenu(onNavigate: (LearnPage) -> Unit) {
             imageRes = R.drawable.phpink,
             onClick = { onNavigate(LearnPage.HOW_TO_DEAL) }
         )
+
+        LearnCard(
+            title = "Advanced Daily Tips",
+            description = "Master your routine and mindset (100 Points).",
+            imageRes = R.drawable.phgreen,
+            onClick = { onNavigate(LearnPage.ADVANCED_TIPS) }
+        )
+    }
+}
+
+@Composable
+fun LockedContentView(pointsRequired: Int, userPoints: Int, onUnlock: () -> Unit) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(32.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Icon(
+            imageVector = Icons.Default.Lock,
+            contentDescription = null,
+            modifier = Modifier.size(80.dp),
+            tint = Color.White.copy(alpha = 0.7f)
+        )
+        Spacer(modifier = Modifier.height(24.dp))
+        Text(
+            text = "Content Locked",
+            style = MaterialTheme.typography.headlineSmall,
+            color = Color.White
+        )
+        Text(
+            text = "Unlock this advanced guide to master your journey.",
+            style = MaterialTheme.typography.bodyMedium,
+            color = Color.White.copy(alpha = 0.7f),
+            textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+            modifier = Modifier.padding(top = 8.dp)
+        )
+        Spacer(modifier = Modifier.height(32.dp))
+        Button(
+            onClick = onUnlock,
+            modifier = Modifier.fillMaxWidth().height(56.dp),
+            shape = MaterialTheme.shapes.large,
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color.White,
+                contentColor = MaterialTheme.colorScheme.primary
+            )
+        ) {
+            Text("Unlock for $pointsRequired Points")
+        }
+        Text(
+            text = "Current Balance: $userPoints Points",
+            style = MaterialTheme.typography.labelSmall,
+            color = Color.White.copy(alpha = 0.5f),
+            modifier = Modifier.padding(top = 12.dp)
+        )
+    }
+}
+
+@Composable
+fun AdvancedTipsView(onDone: () -> Unit) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(24.dp)
+            .verticalScroll(rememberScrollState()),
+        verticalArrangement = Arrangement.spacedBy(24.dp)
+    ) {
+        Text(
+            text = "Welcome to the Inner Circle. These advanced techniques help you thrive in solitude.",
+            style = MaterialTheme.typography.titleLarge,
+            color = Color.White
+        )
+
+        ArtOfAloneItem(
+            title = "The 5-Minute Rule",
+            content = "Whenever you feel overwhelmed by a task, commit to it for just 5 minutes. Often, the hardest part is starting. Once you break the seal, the flow state is much easier to reach."
+        )
+
+        ArtOfAloneItem(
+            title = "Digital Detox Rituals",
+            content = "Instead of just 'unplugging', create a ritual. Light a candle, prepare a specific tea, or sit in a specific chair that is a 'no-phone zone'. Your brain will begin to associate these triggers with deep relaxation."
+        )
+
+        ArtOfAloneItem(
+            title = "Mindful Reflection",
+            content = "At the end of each day, don't just record what happened. Record how you reacted. Identifying patterns in your emotional response is the first step toward masterfully navigating your own mind."
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Button(
+            onClick = onDone,
+            modifier = Modifier.fillMaxWidth().height(56.dp),
+            shape = MaterialTheme.shapes.large,
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = Color.White
+            )
+        ) {
+            Text("Complete Masterclass")
+        }
     }
 }
 

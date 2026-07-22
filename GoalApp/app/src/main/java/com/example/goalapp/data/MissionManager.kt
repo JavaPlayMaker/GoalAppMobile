@@ -104,5 +104,11 @@ class MissionManager(context: Context) {
 
     fun getTotalPoints(): Int = preferenceManager.getTotalPoints()
     
+    fun spendPoints(points: Int): Boolean = preferenceManager.spendPoints(points)
+
+    fun isLearnPageUnlocked(): Boolean = preferenceManager.isLearnPageUnlocked()
+
+    fun unlockLearnPage() = preferenceManager.setLearnPageUnlocked(true)
+    
     fun getMyStats(): List<ActivityRecord> = preferenceManager.getMyStats()
 }

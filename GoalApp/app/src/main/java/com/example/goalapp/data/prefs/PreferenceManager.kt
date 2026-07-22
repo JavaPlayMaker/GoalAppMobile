@@ -32,6 +32,7 @@ class PreferenceManager(context: Context) {
         private const val KEY_JOURNAL_MISSION_COMPLETED = "journal_mission_completed"
         private const val KEY_GOAL_MISSION_COMPLETED = "goal_mission_completed"
         private const val KEY_MY_STATS = "my_stats"
+        private const val KEY_LEARN_PAGE_UNLOCKED = "learn_page_unlocked"
     }
 
     fun getTotalPoints(): Int = prefs.getInt(KEY_TOTAL_POINTS, 0)
@@ -40,6 +41,24 @@ class PreferenceManager(context: Context) {
         val current = getTotalPoints()
         Log.d("PreferenceManager", "Adding $points points to $current")
         prefs.edit { putInt(KEY_TOTAL_POINTS, current + points) }
+    }
+
+    fun spendPoints(points: Int): Boolean {
+        val current = getTotalPoints()
+        return if (current >= points) {
+            Log.d("PreferenceManager", "Spending $points points from $current")
+            prefs.edit { putInt(KEY_TOTAL_POINTS, current - points) }
+            true
+        } else {
+            Log.d("PreferenceManager", "Not enough points to spend $points (current: $current)")
+            false
+        }
+    }
+
+    fun isLearnPageUnlocked(): Boolean = prefs.getBoolean(KEY_LEARN_PAGE_UNLOCKED, false)
+
+    fun setLearnPageUnlocked(unlocked: Boolean) {
+        prefs.edit { putBoolean(KEY_LEARN_PAGE_UNLOCKED, unlocked) }
     }
 
     fun getLastMissionResetDate(): String = prefs.getString(KEY_LAST_MISSION_RESET_DATE, "") ?: ""

@@ -64,20 +64,14 @@ fun MyStatsScreen(onBack: () -> Unit) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(32.dp)
         ) {
-            // 1. Overall Progress
+            // 1. Overall Progress (Ring)
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 ProgressRing(progress = stats.currentMonthProgress)
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
-                    "Total Points: $totalPoints",
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.primary
-                )
-                Text(
                     "Monthly Completion",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.7f)
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
                 )
             }
 
@@ -97,15 +91,34 @@ fun MyStatsScreen(onBack: () -> Unit) {
                 )
             }
 
-            // 3. Missions
-            StatCard(
-                title = "Daily Missions",
-                value = stats.missionsTotal.toString(),
-                subValue = "${stats.missionStreak} day streak",
-                modifier = Modifier.fillMaxWidth()
-            )
+            // 3. Total Points (Large Primary Card)
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = MaterialTheme.shapes.large,
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    contentColor = Color.White
+                )
+            ) {
+                Column(
+                    modifier = Modifier.padding(24.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text("Total Points", style = MaterialTheme.typography.titleMedium)
+                    Text(
+                        totalPoints.toString(),
+                        style = MaterialTheme.typography.displayMedium,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        "Keep going! You're doing great.",
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier.padding(top = 8.dp)
+                    )
+                }
+            }
 
-            // 4. Monthly Insights
+            // 4. Monthly Insights (Includes Mission data)
             if (stats.insights.isNotEmpty()) {
                 Column(
                     modifier = Modifier.fillMaxWidth(),
@@ -124,6 +137,22 @@ fun MyStatsScreen(onBack: () -> Unit) {
                                 Icon(Icons.Default.Info, contentDescription = null, modifier = Modifier.size(20.dp))
                                 Spacer(modifier = Modifier.width(12.dp))
                                 Text(insight, style = MaterialTheme.typography.bodyMedium)
+                            }
+                        }
+                    }
+                    // Add Mission Streak as a custom insight if not present
+                    if (stats.missionStreak > 0) {
+                        Surface(
+                            color = MaterialTheme.colorScheme.secondaryContainer,
+                            shape = MaterialTheme.shapes.medium
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(16.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(Icons.Default.Info, contentDescription = null, modifier = Modifier.size(20.dp))
+                                Spacer(modifier = Modifier.width(12.dp))
+                                Text("You've maintained a ${stats.missionStreak}-day mission streak!", style = MaterialTheme.typography.bodyMedium)
                             }
                         }
                     }
