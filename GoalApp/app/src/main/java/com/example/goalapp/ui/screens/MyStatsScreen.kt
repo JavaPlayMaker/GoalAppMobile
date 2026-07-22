@@ -21,17 +21,17 @@ import java.util.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ActivityHistoryScreen(onBack: () -> Unit) {
+fun MyStatsScreen(onBack: () -> Unit) {
     val context = LocalContext.current
     val missionManager = remember { MissionManager(context) }
-    val history = remember { missionManager.getActivityHistory() }
+    val stats = remember { missionManager.getMyStats() }
     val dateFormatter = SimpleDateFormat("MMM d, yyyy HH:mm", Locale.getDefault())
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             TopAppBar(
-                title = { Text("Activity History", color = MaterialTheme.colorScheme.onBackground) },
+                title = { Text("My Stats", color = MaterialTheme.colorScheme.onBackground) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(
@@ -48,7 +48,7 @@ fun ActivityHistoryScreen(onBack: () -> Unit) {
             )
         }
     ) { innerPadding ->
-        if (history.isEmpty()) {
+        if (stats.isEmpty()) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -56,7 +56,7 @@ fun ActivityHistoryScreen(onBack: () -> Unit) {
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = "No activity yet. Start your first mission!",
+                    text = "No stats yet. Start your first mission!",
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
                 )
@@ -69,8 +69,8 @@ fun ActivityHistoryScreen(onBack: () -> Unit) {
                 contentPadding = PaddingValues(16.dp),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                items(history) { record ->
-                    HistoryItem(record, dateFormatter)
+                items(stats) { record ->
+                    StatItem(record, dateFormatter)
                 }
             }
         }
@@ -78,7 +78,7 @@ fun ActivityHistoryScreen(onBack: () -> Unit) {
 }
 
 @Composable
-fun HistoryItem(record: ActivityRecord, dateFormatter: SimpleDateFormat) {
+fun StatItem(record: ActivityRecord, dateFormatter: SimpleDateFormat) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = MaterialTheme.shapes.medium,

@@ -30,7 +30,7 @@ class PreferenceManager(context: Context) {
         private const val KEY_LAST_MISSION_RESET_DATE = "last_mission_reset_date"
         private const val KEY_JOURNAL_MISSION_COMPLETED = "journal_mission_completed"
         private const val KEY_GOAL_MISSION_COMPLETED = "goal_mission_completed"
-        private const val KEY_ACTIVITY_HISTORY = "activity_history"
+        private const val KEY_MY_STATS = "my_stats"
     }
 
     fun getTotalPoints(): Int = prefs.getInt(KEY_TOTAL_POINTS, 0)
@@ -57,8 +57,8 @@ class PreferenceManager(context: Context) {
         prefs.edit { putBoolean(KEY_GOAL_MISSION_COMPLETED, completed) }
     }
 
-    fun getActivityHistory(): List<ActivityRecord> {
-        val json = prefs.getString(KEY_ACTIVITY_HISTORY, "[]") ?: "[]"
+    fun getMyStats(): List<ActivityRecord> {
+        val json = prefs.getString(KEY_MY_STATS, "[]") ?: "[]"
         return try {
             Json.decodeFromString(json)
         } catch (e: Exception) {
@@ -66,11 +66,11 @@ class PreferenceManager(context: Context) {
         }
     }
 
-    fun addActivityRecord(record: ActivityRecord) {
-        val history = getActivityHistory().toMutableList()
-        history.add(0, record) // Add to top
-        val json = Json.encodeToString(history)
-        prefs.edit { putString(KEY_ACTIVITY_HISTORY, json) }
+    fun addStatRecord(record: ActivityRecord) {
+        val stats = getMyStats().toMutableList()
+        stats.add(0, record) // Add to top
+        val json = Json.encodeToString(stats)
+        prefs.edit { putString(KEY_MY_STATS, json) }
     }
 
     fun isJournalReminderEnabled(): Boolean = prefs.getBoolean(KEY_JOURNAL_REMINDER_ENABLED, false)

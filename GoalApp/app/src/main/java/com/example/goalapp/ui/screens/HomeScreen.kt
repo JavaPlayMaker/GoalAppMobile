@@ -28,7 +28,7 @@ fun HomeScreen(
     onJournal: () -> Unit,
     onSettings: () -> Unit,
     onDailyMissions: () -> Unit,
-    onHistory: () -> Unit
+    onMyStats: () -> Unit
 ) {
     val context = LocalContext.current
     
@@ -70,23 +70,15 @@ fun HomeScreen(
                 contentDescription = "App Logo",
                 modifier = Modifier
                     .size(200.dp)
-                    .padding(bottom = 16.dp)
+                    .padding(bottom = 8.dp)
                     .clickable { onDailyMissions() }
             )
 
             Text(
-                text = "Welcome",
-                style = MaterialTheme.typography.displaySmall,
+                text = "Tap above for Daily Missions!",
+                style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onBackground,
-                modifier = Modifier.padding(bottom = 16.dp)
-            )
-
-            HomeButton(
-                label = "History",
-                action = onHistory,
-                modifier = Modifier
-                    .padding(bottom = 24.dp)
-                    .height(56.dp)
+                modifier = Modifier.padding(bottom = 32.dp)
             )
 
             // 2x2 Grid Layout
@@ -112,6 +104,14 @@ fun HomeScreen(
             }
             
             Spacer(modifier = Modifier.weight(1f))
+
+            HomeButton(
+                label = "My Stats",
+                action = onMyStats,
+                modifier = Modifier
+                    .padding(top = 24.dp)
+                    .height(56.dp)
+            )
         }
     }
 }
@@ -147,7 +147,7 @@ fun HomeScreenPreview() {
             onJournal = {},
             onSettings = {},
             onDailyMissions = {},
-            onHistory = {}
+            onMyStats = {}
         )
     }
 }

@@ -25,7 +25,7 @@ class MissionManager(context: Context) {
         if (!preferenceManager.isJournalMissionCompleted()) {
             preferenceManager.setJournalMissionCompleted(true)
             preferenceManager.addPoints(50)
-            preferenceManager.addActivityRecord(
+            preferenceManager.addStatRecord(
                 ActivityRecord(
                     timestamp = System.currentTimeMillis(),
                     type = ActivityType.JOURNAL,
@@ -42,7 +42,7 @@ class MissionManager(context: Context) {
         if (!preferenceManager.isGoalMissionCompleted()) {
             preferenceManager.setGoalMissionCompleted(true)
             preferenceManager.addPoints(50)
-            preferenceManager.addActivityRecord(
+            preferenceManager.addStatRecord(
                 ActivityRecord(
                     timestamp = System.currentTimeMillis(),
                     type = ActivityType.GOAL,
@@ -58,7 +58,7 @@ class MissionManager(context: Context) {
         if (preferenceManager.isJournalMissionCompleted() && preferenceManager.isGoalMissionCompleted()) {
             // Award bonus for completing all missions?
             // For now just add a record
-            preferenceManager.addActivityRecord(
+            preferenceManager.addStatRecord(
                 ActivityRecord(
                     timestamp = System.currentTimeMillis(),
                     type = ActivityType.MISSION_COMPLETE,
@@ -89,5 +89,5 @@ class MissionManager(context: Context) {
 
     fun getTotalPoints(): Int = preferenceManager.getTotalPoints()
     
-    fun getActivityHistory(): List<ActivityRecord> = preferenceManager.getActivityHistory()
+    fun getMyStats(): List<ActivityRecord> = preferenceManager.getMyStats()
 }

@@ -151,7 +151,7 @@ fun GoalAppNavigation() {
                 onJournal = { navController.navigate("journal") },
                 onSettings = { navController.navigate("settings") },
                 onDailyMissions = { navController.navigate("daily_missions") },
-                onHistory = { navController.navigate("history") }
+                onMyStats = { navController.navigate("my_stats") }
             )
         }
         
@@ -159,8 +159,8 @@ fun GoalAppNavigation() {
             DailyMissionsScreen(onBack = { navController.popBackStack() })
         }
 
-        composable("history") {
-            ActivityHistoryScreen(onBack = { navController.popBackStack() })
+        composable("my_stats") {
+            MyStatsScreen(onBack = { navController.popBackStack() })
         }
         
         composable("learn") {
