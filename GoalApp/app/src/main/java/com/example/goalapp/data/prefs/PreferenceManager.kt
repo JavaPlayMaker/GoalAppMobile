@@ -1,6 +1,7 @@
 package com.example.goalapp.data.prefs
 
 import android.content.Context
+import android.util.Log
 import androidx.core.content.edit
 import com.example.goalapp.data.*
 import kotlinx.serialization.encodeToString
@@ -36,7 +37,9 @@ class PreferenceManager(context: Context) {
     fun getTotalPoints(): Int = prefs.getInt(KEY_TOTAL_POINTS, 0)
 
     fun addPoints(points: Int) {
-        prefs.edit { putInt(KEY_TOTAL_POINTS, getTotalPoints() + points) }
+        val current = getTotalPoints()
+        Log.d("PreferenceManager", "Adding $points points to $current")
+        prefs.edit { putInt(KEY_TOTAL_POINTS, current + points) }
     }
 
     fun getLastMissionResetDate(): String = prefs.getString(KEY_LAST_MISSION_RESET_DATE, "") ?: ""
@@ -59,9 +62,11 @@ class PreferenceManager(context: Context) {
 
     fun getMyStats(): List<ActivityRecord> {
         val json = prefs.getString(KEY_MY_STATS, "[]") ?: "[]"
+        Log.d("PreferenceManager", "Retrieving Stats JSON: $json")
         return try {
             Json.decodeFromString(json)
         } catch (e: Exception) {
+            Log.e("PreferenceManager", "Error decoding stats JSON", e)
             emptyList()
         }
     }
@@ -70,6 +75,7 @@ class PreferenceManager(context: Context) {
         val stats = getMyStats().toMutableList()
         stats.add(0, record) // Add to top
         val json = Json.encodeToString(stats)
+        Log.d("PreferenceManager", "Saving Stats JSON: $json")
         prefs.edit { putString(KEY_MY_STATS, json) }
     }
 

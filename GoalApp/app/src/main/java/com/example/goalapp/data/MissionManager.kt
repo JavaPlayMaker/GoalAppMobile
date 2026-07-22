@@ -1,6 +1,7 @@
 package com.example.goalapp.data
 
 import android.content.Context
+import android.util.Log
 import com.example.goalapp.data.prefs.PreferenceManager
 import java.text.SimpleDateFormat
 import java.util.*
@@ -21,36 +22,50 @@ class MissionManager(context: Context) {
     }
 
     fun completeJournalMission() {
+        Log.d("MissionManager", "completeJournalMission called")
         checkAndResetMissions()
+        
+        // Always record the activity
+        preferenceManager.addStatRecord(
+            ActivityRecord(
+                timestamp = System.currentTimeMillis(),
+                type = ActivityType.JOURNAL,
+                points = if (!preferenceManager.isJournalMissionCompleted()) 50 else 0,
+                description = "Completed Journal Entry"
+            )
+        )
+
         if (!preferenceManager.isJournalMissionCompleted()) {
+            Log.d("MissionManager", "Journal mission NOT completed yet, awarding points")
             preferenceManager.setJournalMissionCompleted(true)
             preferenceManager.addPoints(50)
-            preferenceManager.addStatRecord(
-                ActivityRecord(
-                    timestamp = System.currentTimeMillis(),
-                    type = ActivityType.JOURNAL,
-                    points = 50,
-                    description = "Completed Daily Journal"
-                )
-            )
             checkAllMissionsCompleted()
+        } else {
+            Log.d("MissionManager", "Journal mission already completed today, skipping points")
         }
     }
 
     fun completeGoalMission() {
+        Log.d("MissionManager", "completeGoalMission called")
         checkAndResetMissions()
+        
+        // Always record the activity
+        preferenceManager.addStatRecord(
+            ActivityRecord(
+                timestamp = System.currentTimeMillis(),
+                type = ActivityType.GOAL,
+                points = if (!preferenceManager.isGoalMissionCompleted()) 50 else 0,
+                description = "Completed Goal Activity"
+            )
+        )
+
         if (!preferenceManager.isGoalMissionCompleted()) {
+            Log.d("MissionManager", "Goal mission NOT completed yet, awarding points")
             preferenceManager.setGoalMissionCompleted(true)
             preferenceManager.addPoints(50)
-            preferenceManager.addStatRecord(
-                ActivityRecord(
-                    timestamp = System.currentTimeMillis(),
-                    type = ActivityType.GOAL,
-                    points = 50,
-                    description = "Completed Daily Goal Activity"
-                )
-            )
             checkAllMissionsCompleted()
+        } else {
+            Log.d("MissionManager", "Goal mission already completed today, skipping points")
         }
     }
 
