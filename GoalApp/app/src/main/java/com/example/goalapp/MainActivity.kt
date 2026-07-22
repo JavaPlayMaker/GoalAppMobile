@@ -149,8 +149,18 @@ fun GoalAppNavigation() {
                 },
                 onGame = { navController.navigate("game") },
                 onJournal = { navController.navigate("journal") },
-                onSettings = { navController.navigate("settings") }
+                onSettings = { navController.navigate("settings") },
+                onDailyMissions = { navController.navigate("daily_missions") },
+                onHistory = { navController.navigate("history") }
             )
+        }
+        
+        composable("daily_missions") {
+            DailyMissionsScreen(onBack = { navController.popBackStack() })
+        }
+
+        composable("history") {
+            ActivityHistoryScreen(onBack = { navController.popBackStack() })
         }
         
         composable("learn") {

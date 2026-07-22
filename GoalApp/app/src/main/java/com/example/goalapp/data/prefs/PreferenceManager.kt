@@ -3,6 +3,8 @@ package com.example.goalapp.data.prefs
 import android.content.Context
 import androidx.core.content.edit
 import com.example.goalapp.data.*
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 
 class PreferenceManager(context: Context) {
     private val prefs = context.getSharedPreferences("goal_app_prefs", Context.MODE_PRIVATE)
@@ -22,6 +24,53 @@ class PreferenceManager(context: Context) {
         private const val KEY_JOURNAL_REMINDER_ENABLED = "journal_reminder_enabled"
         private const val KEY_JOURNAL_REMINDER_TIME = "journal_reminder_time"
         private const val KEY_INACTIVITY_NOTIFICATION_ENABLED = "inactivity_notification_enabled"
+        
+        // New Mission and Points Keys
+        private const val KEY_TOTAL_POINTS = "total_points"
+        private const val KEY_LAST_MISSION_RESET_DATE = "last_mission_reset_date"
+        private const val KEY_JOURNAL_MISSION_COMPLETED = "journal_mission_completed"
+        private const val KEY_GOAL_MISSION_COMPLETED = "goal_mission_completed"
+        private const val KEY_ACTIVITY_HISTORY = "activity_history"
+    }
+
+    fun getTotalPoints(): Int = prefs.getInt(KEY_TOTAL_POINTS, 0)
+
+    fun addPoints(points: Int) {
+        prefs.edit { putInt(KEY_TOTAL_POINTS, getTotalPoints() + points) }
+    }
+
+    fun getLastMissionResetDate(): String = prefs.getString(KEY_LAST_MISSION_RESET_DATE, "") ?: ""
+
+    fun setLastMissionResetDate(date: String) {
+        prefs.edit { putString(KEY_LAST_MISSION_RESET_DATE, date) }
+    }
+
+    fun isJournalMissionCompleted(): Boolean = prefs.getBoolean(KEY_JOURNAL_MISSION_COMPLETED, false)
+
+    fun setJournalMissionCompleted(completed: Boolean) {
+        prefs.edit { putBoolean(KEY_JOURNAL_MISSION_COMPLETED, completed) }
+    }
+
+    fun isGoalMissionCompleted(): Boolean = prefs.getBoolean(KEY_GOAL_MISSION_COMPLETED, false)
+
+    fun setGoalMissionCompleted(completed: Boolean) {
+        prefs.edit { putBoolean(KEY_GOAL_MISSION_COMPLETED, completed) }
+    }
+
+    fun getActivityHistory(): List<ActivityRecord> {
+        val json = prefs.getString(KEY_ACTIVITY_HISTORY, "[]") ?: "[]"
+        return try {
+            Json.decodeFromString(json)
+        } catch (e: Exception) {
+            emptyList()
+        }
+    }
+
+    fun addActivityRecord(record: ActivityRecord) {
+        val history = getActivityHistory().toMutableList()
+        history.add(0, record) // Add to top
+        val json = Json.encodeToString(history)
+        prefs.edit { putString(KEY_ACTIVITY_HISTORY, json) }
     }
 
     fun isJournalReminderEnabled(): Boolean = prefs.getBoolean(KEY_JOURNAL_REMINDER_ENABLED, false)

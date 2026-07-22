@@ -1,6 +1,7 @@
 package com.example.goalapp.ui.screens
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
@@ -25,7 +26,9 @@ fun HomeScreen(
     onGoal: () -> Unit,
     onGame: () -> Unit,
     onJournal: () -> Unit,
-    onSettings: () -> Unit
+    onSettings: () -> Unit,
+    onDailyMissions: () -> Unit,
+    onHistory: () -> Unit
 ) {
     val context = LocalContext.current
     
@@ -67,14 +70,23 @@ fun HomeScreen(
                 contentDescription = "App Logo",
                 modifier = Modifier
                     .size(200.dp)
-                    .padding(bottom = 32.dp)
+                    .padding(bottom = 16.dp)
+                    .clickable { onDailyMissions() }
             )
 
             Text(
                 text = "Welcome",
                 style = MaterialTheme.typography.displaySmall,
                 color = MaterialTheme.colorScheme.onBackground,
-                modifier = Modifier.padding(bottom = 32.dp)
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
+
+            HomeButton(
+                label = "History",
+                action = onHistory,
+                modifier = Modifier
+                    .padding(bottom = 24.dp)
+                    .height(56.dp)
             )
 
             // 2x2 Grid Layout
@@ -105,12 +117,12 @@ fun HomeScreen(
 }
 
 @Composable
-fun HomeButton(label: String, action: () -> Unit) {
+fun HomeButton(label: String, action: () -> Unit, modifier: Modifier = Modifier) {
     Button(
         onClick = action,
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
-            .height(100.dp),
+            .then(if (modifier == Modifier) Modifier.height(100.dp) else Modifier),
         shape = MaterialTheme.shapes.large,
         colors = ButtonDefaults.buttonColors(
             containerColor = MaterialTheme.colorScheme.primary,
@@ -133,7 +145,9 @@ fun HomeScreenPreview() {
             onGoal = {},
             onGame = {},
             onJournal = {},
-            onSettings = {}
+            onSettings = {},
+            onDailyMissions = {},
+            onHistory = {}
         )
     }
 }

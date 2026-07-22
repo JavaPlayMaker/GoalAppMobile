@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.goalapp.data.MissionManager
 import com.example.goalapp.data.prefs.PreferenceManager
 import com.example.goalapp.notifications.NotificationHelper
 import java.text.SimpleDateFormat
@@ -23,6 +24,7 @@ import java.util.*
 fun JournalScreen(onBack: () -> Unit) {
     val context = LocalContext.current
     val preferenceManager = remember { PreferenceManager(context) }
+    val missionManager = remember { MissionManager(context) }
     
     val datePickerState = rememberDatePickerState(
         initialSelectedDateMillis = System.currentTimeMillis()
@@ -190,6 +192,7 @@ fun JournalScreen(onBack: () -> Unit) {
                     Button(
                         onClick = {
                             journalEntries[selectedDate] = journalText
+                            missionManager.completeJournalMission()
                             onBack()
                         },
                         modifier = Modifier.fillMaxWidth().height(56.dp),

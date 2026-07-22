@@ -23,6 +23,7 @@ import com.example.goalapp.data.UserCheckIn
 import com.example.goalapp.data.UserProfile
 import com.example.goalapp.data.ActivityRepository
 import com.example.goalapp.data.TimeAvailable
+import com.example.goalapp.data.MissionManager
 import com.example.goalapp.ui.components.LoadingOverlay
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -33,6 +34,8 @@ fun RecommendationScreen(
     profile: UserProfile,
     onDone: () -> Unit
 ) {
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val missionManager = remember { MissionManager(context) }
     var currentActivity by remember { 
         mutableStateOf(ActivityRepository.getRecommendation(checkIn, profile)) 
     }
@@ -100,7 +103,10 @@ fun RecommendationScreen(
 
                     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                         Button(
-                            onClick = onDone,
+                            onClick = {
+                                missionManager.completeGoalMission()
+                                onDone()
+                            },
                             modifier = Modifier.fillMaxWidth().height(56.dp),
                             shape = MaterialTheme.shapes.large,
                             colors = ButtonDefaults.buttonColors(
