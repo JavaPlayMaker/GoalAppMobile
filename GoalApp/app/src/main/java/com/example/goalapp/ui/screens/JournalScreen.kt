@@ -16,6 +16,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.example.goalapp.data.MissionManager
 import com.example.goalapp.data.prefs.PreferenceManager
 import com.example.goalapp.notifications.NotificationHelper
+import com.example.goalapp.data.JournalEntry
+import com.example.goalapp.data.SupabaseRepository
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -23,6 +26,7 @@ import java.util.*
 @Composable
 fun JournalScreen(onBack: () -> Unit) {
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
     val preferenceManager = remember { PreferenceManager(context) }
     val missionManager = remember { MissionManager(context) }
     
@@ -31,12 +35,33 @@ fun JournalScreen(onBack: () -> Unit) {
     )
     var showDatePicker by remember { mutableStateOf(true) }
     var journalText by remember { mutableStateOf("") }
+    var isLoading by remember { mutableStateOf(false) }
     
-    val journalEntries = remember { mutableStateMapOf<Long, String>() }
-    val selectedDate = datePickerState.selectedDateMillis ?: System.currentTimeMillis()
+    val journalEntries = remember { mutableStateMapOf<String, String>() }
+    val selectedDateMillis = datePickerState.selectedDateMillis ?: System.currentTimeMillis()
+    val selectedDateKey = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date(selectedDateMillis))
     
-    LaunchedEffect(selectedDate) {
-        journalText = journalEntries[selectedDate] ?: ""
+    // Load entries from Supabase on start
+    LaunchedEffect(Unit) {
+        isLoading = true
+        try {
+            // In a real app, you'd get the actual customer ID from Supabase Auth
+            val customerId = "simulated-user-id" 
+            val entries = SupabaseRepository.getJournalEntries(customerId)
+            entries.forEach { entry ->
+                entry.entry_date?.let { date ->
+                    journalEntries[date] = entry.content
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        } finally {
+            isLoading = false
+        }
+    }
+
+    LaunchedEffect(selectedDateKey) {
+        journalText = journalEntries[selectedDateKey] ?: ""
     }
 
     Scaffold(
@@ -110,7 +135,7 @@ fun JournalScreen(onBack: () -> Unit) {
                             contentColor = Color.White
                         )
                     ) {
-                        Text("Write for ${formatDate(selectedDate)}")
+                        Text("Write for ${formatDate(selectedDateMillis)}")
                     }
 
                     if (!preferenceManager.isJournalReminderEnabled()) {
@@ -136,7 +161,7 @@ fun JournalScreen(onBack: () -> Unit) {
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = formatDate(selectedDate),
+                        text = formatDate(selectedDateMillis),
                         style = MaterialTheme.typography.headlineSmall,
                         color = MaterialTheme.colorScheme.onBackground,
                         modifier = Modifier.padding(bottom = 8.dp)
@@ -179,7 +204,7 @@ fun JournalScreen(onBack: () -> Unit) {
                     
                     TextButton(
                         onClick = { 
-                            journalEntries[selectedDate] = journalText
+                            journalEntries[selectedDateKey] = journalText
                             showDatePicker = true 
                         },
                         colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.onBackground)
@@ -191,10 +216,32 @@ fun JournalScreen(onBack: () -> Unit) {
 
                     Button(
                         onClick = {
-                            journalEntries[selectedDate] = journalText
-                            missionManager.completeJournalMission()
-                            onBack()
+                            isLoading = true
+                            scope.launch {
+                                try {
+                                    val customerId = "simulated-user-id"
+                                    SupabaseRepository.saveJournalEntry(
+                                        JournalEntry(
+                                            customer_id = customerId,
+                                            content = journalText,
+                                            entry_date = selectedDateKey
+                                        )
+                                    )
+                                    journalEntries[selectedDateKey] = journalText
+                                    missionManager.completeJournalMission()
+                                    onBack()
+                                } catch (e: Exception) {
+                                    e.printStackTrace()
+                                    // Fallback for MVP if offline
+                                    journalEntries[selectedDateKey] = journalText
+                                    missionManager.completeJournalMission()
+                                    onBack()
+                                } finally {
+                                    isLoading = false
+                                }
+                            }
                         },
+                        enabled = !isLoading,
                         modifier = Modifier.fillMaxWidth().height(56.dp),
                         shape = MaterialTheme.shapes.large,
                         colors = ButtonDefaults.buttonColors(
@@ -202,7 +249,11 @@ fun JournalScreen(onBack: () -> Unit) {
                             contentColor = Color.White
                         )
                     ) {
-                        Text("Done")
+                        if (isLoading) {
+                            CircularProgressIndicator(color = Color.White)
+                        } else {
+                            Text("Done")
+                        }
                     }
                 }
             }

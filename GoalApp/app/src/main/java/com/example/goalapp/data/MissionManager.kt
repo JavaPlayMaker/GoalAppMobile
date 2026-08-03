@@ -6,9 +6,14 @@ import com.example.goalapp.data.prefs.PreferenceManager
 import java.text.SimpleDateFormat
 import java.util.*
 
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+
 class MissionManager(context: Context) {
     private val preferenceManager = PreferenceManager(context)
     private val dateFormatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+    private val scope = CoroutineScope(Dispatchers.IO)
 
     fun checkAndResetMissions() {
         val today = dateFormatter.format(Date())
@@ -18,6 +23,28 @@ class MissionManager(context: Context) {
             preferenceManager.setJournalMissionCompleted(false)
             preferenceManager.setGoalMissionCompleted(false)
             preferenceManager.setLastMissionResetDate(today)
+            
+            // Sync with Supabase if possible
+            syncStatsToSupabase()
+        }
+    }
+
+    private fun syncStatsToSupabase() {
+        scope.launch {
+            try {
+                val customerId = "simulated-user-id" // Replace with real Auth ID
+                SupabaseRepository.updateUserStats(
+                    UserStats(
+                        customer_id = customerId,
+                        total_points = preferenceManager.getTotalPoints(),
+                        last_mission_reset = preferenceManager.getLastMissionResetDate(),
+                        journal_mission_completed = preferenceManager.isJournalMissionCompleted(),
+                        goal_mission_completed = preferenceManager.isGoalMissionCompleted()
+                    )
+                )
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
     }
 
@@ -39,6 +66,7 @@ class MissionManager(context: Context) {
             Log.d("MissionManager", "Journal mission NOT completed yet, awarding points")
             preferenceManager.setJournalMissionCompleted(true)
             preferenceManager.addPoints(50)
+            syncStatsToSupabase()
             checkAllMissionsCompleted()
         } else {
             Log.d("MissionManager", "Journal mission already completed today, skipping points")
@@ -63,6 +91,7 @@ class MissionManager(context: Context) {
             Log.d("MissionManager", "Goal mission NOT completed yet, awarding points")
             preferenceManager.setGoalMissionCompleted(true)
             preferenceManager.addPoints(50)
+            syncStatsToSupabase()
             checkAllMissionsCompleted()
         } else {
             Log.d("MissionManager", "Goal mission already completed today, skipping points")

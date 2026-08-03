@@ -1,5 +1,8 @@
 package com.example.goalapp.data
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 enum class Mood(val displayName: String) {
     LONELY("Lonely"),
     SAD("Sad"),
@@ -11,18 +14,21 @@ enum class Mood(val displayName: String) {
     JUST_WANT_SOMETHING_TO_DO("Just want something to do")
 }
 
+@Serializable
 enum class EnergyLevel(val displayName: String) {
     LOW("Low"),
     MEDIUM("Medium"),
     HIGH("High")
 }
 
+@Serializable
 enum class SocialPreference(val displayName: String) {
     ALONE("Alone"),
     EITHER("Either"),
     AROUND_PEOPLE("Around people")
 }
 
+@Serializable
 enum class TimeAvailable(val minutes: Int, val displayName: String) {
     TEN_MINUTES(10, "10 minutes"),
     THIRTY_MINUTES(30, "30 minutes"),
@@ -164,12 +170,15 @@ data class UserProfile(
     val focus: GoalFocus = GoalFocus.FIND_DO,
 )
 
+@Serializable
 data class GoalActivity(
+    val id: Int? = null,
     val name: String,
     val whyFits: String,
     val firstStep: String
 )
 
+@Serializable
 data class UserCheckIn(
     val mood: Mood,
     val energyLevel: EnergyLevel,
@@ -177,7 +186,28 @@ data class UserCheckIn(
     val timeAvailable: TimeAvailable
 )
 
+@Serializable
 data class JournalEntry(
-    val date: Long, // Epoch millis
-    val content: String
+    val id: Int? = null,
+    val customer_id: String? = null,
+    val content: String,
+    val entry_date: String? = null,
+    val created_at: String? = null
+)
+
+@Serializable
+data class UserStats(
+    val customer_id: String,
+    val total_points: Int = 0,
+    val last_mission_reset: String? = null,
+    val journal_mission_completed: Boolean = false,
+    val goal_mission_completed: Boolean = false
+)
+
+@Serializable
+data class Customer(
+    val id: String,
+    val name: String?,
+    val email: String,
+    val created_at: String? = null
 )

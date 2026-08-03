@@ -1,6 +1,9 @@
 *.iml
 .gradle
 /local.properties
+
+# Supabase Keys
+app/src/main/java/com/example/goalapp/data/SupabaseClient.kt
 /.idea/caches
 /.idea/libraries
 /.idea/modules.xml
@@ -13,3 +16,6 @@
 .externalNativeBuild
 .cxx
 local.properties
+
+# Supabase Keys
+app/src/main/java/com/example/goalapp/data/SupabaseClient.kt
