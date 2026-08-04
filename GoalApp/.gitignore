@@ -1,21 +1,26 @@
 *.iml
 .gradle
 /local.properties
+local.properties
+.DS_Store
 
-# Supabase Keys
-app/src/main/java/com/example/goalapp/data/SupabaseClient.kt
+# IDE files
 /.idea/caches
 /.idea/libraries
 /.idea/modules.xml
 /.idea/workspace.xml
 /.idea/navEditor.xml
 /.idea/assetWizardSettings.xml
-.DS_Store
+
+# Build outputs
 /build
 /captures
 .externalNativeBuild
 .cxx
-local.properties
 
+# Secrets and sensitive files
 # Supabase Keys
 app/src/main/java/com/example/goalapp/data/SupabaseClient.kt
+
+# Server Main
+server/src/main/kotlin/com/example/goalapp/server/Main.kt

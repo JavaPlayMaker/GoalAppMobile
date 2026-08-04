@@ -17,7 +17,7 @@ import com.example.goalapp.data.MissionManager
 import com.example.goalapp.data.prefs.PreferenceManager
 import com.example.goalapp.notifications.NotificationHelper
 import com.example.goalapp.data.JournalEntry
-import com.example.goalapp.data.SupabaseRepository
+import com.example.goalapp.data.LocalBridgeClient
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
@@ -41,23 +41,9 @@ fun JournalScreen(onBack: () -> Unit) {
     val selectedDateMillis = datePickerState.selectedDateMillis ?: System.currentTimeMillis()
     val selectedDateKey = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date(selectedDateMillis))
     
-    // Load entries from Supabase on start
+    // Load entries on start (Disabled for local bridge MVP to simplify)
     LaunchedEffect(Unit) {
-        isLoading = true
-        try {
-            // In a real app, you'd get the actual customer ID from Supabase Auth
-            val customerId = "simulated-user-id" 
-            val entries = SupabaseRepository.getJournalEntries(customerId)
-            entries.forEach { entry ->
-                entry.entry_date?.let { date ->
-                    journalEntries[date] = entry.content
-                }
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-        } finally {
-            isLoading = false
-        }
+        // In a real local bridge, you would fetch from your Ktor server here
     }
 
     LaunchedEffect(selectedDateKey) {
@@ -220,7 +206,7 @@ fun JournalScreen(onBack: () -> Unit) {
                             scope.launch {
                                 try {
                                     val customerId = "simulated-user-id"
-                                    SupabaseRepository.saveJournalEntry(
+                                    LocalBridgeClient.saveJournalEntry(
                                         JournalEntry(
                                             customer_id = customerId,
                                             content = journalText,

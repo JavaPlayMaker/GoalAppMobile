@@ -21,6 +21,7 @@ import com.example.goalapp.data.EnergyLevel
 import com.example.goalapp.data.SocialPreference
 import com.example.goalapp.data.UserCheckIn
 import com.example.goalapp.data.UserProfile
+import com.example.goalapp.data.GoalActivity
 import com.example.goalapp.data.ActivityRepository
 import com.example.goalapp.data.TimeAvailable
 import com.example.goalapp.data.MissionManager
@@ -36,11 +37,14 @@ fun RecommendationScreen(
 ) {
     val context = androidx.compose.ui.platform.LocalContext.current
     val missionManager = remember { MissionManager(context) }
-    var currentActivity by remember { 
-        mutableStateOf(ActivityRepository.getRecommendation(checkIn, profile)) 
-    }
-    var isLoading by remember { mutableStateOf(false) }
+    var currentActivity by remember { mutableStateOf<GoalActivity?>(null) }
+    var isLoading by remember { mutableStateOf(true) }
     val scope = rememberCoroutineScope()
+
+    LaunchedEffect(checkIn, profile) {
+        currentActivity = ActivityRepository.getRecommendation(checkIn, profile)
+        isLoading = false
+    }
 
     Scaffold(
         containerColor = MaterialTheme.colorScheme.background,
@@ -65,74 +69,76 @@ fun RecommendationScreen(
         }
     ) { innerPadding ->
         Box(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
-            AnimatedContent(
-                targetState = currentActivity,
-                transitionSpec = {
-                    fadeIn().togetherWith(fadeOut())
-                },
-                label = "ActivityTransition"
-            ) { targetActivity ->
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(24.dp),
-                    verticalArrangement = Arrangement.spacedBy(32.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Spacer(modifier = Modifier.height(16.dp))
-                    
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text(
-                            text = "You should try to:",
-                            style = MaterialTheme.typography.labelLarge,
-                            color = MaterialTheme.colorScheme.onBackground
-                        )
-                        Text(
-                            text = targetActivity.name,
-                            style = MaterialTheme.typography.displaySmall,
-                            textAlign = TextAlign.Center,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onBackground
-                        )
-                    }
-
-                    RecommendationCard(title = "Why it fits", content = targetActivity.whyFits)
-                    RecommendationCard(title = "First Step", content = targetActivity.firstStep)
-
-                    Spacer(modifier = Modifier.weight(1f))
-
-                    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                        Button(
-                            onClick = {
-                                missionManager.completeGoalMission()
-                                onDone()
-                            },
-                            modifier = Modifier.fillMaxWidth().height(56.dp),
-                            shape = MaterialTheme.shapes.large,
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = MaterialTheme.colorScheme.primary,
-                                contentColor = Color.White
+            currentActivity?.let { activity ->
+                AnimatedContent(
+                    targetState = activity,
+                    transitionSpec = {
+                        fadeIn().togetherWith(fadeOut())
+                    },
+                    label = "ActivityTransition"
+                ) { targetActivity ->
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(24.dp),
+                        verticalArrangement = Arrangement.spacedBy(32.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Spacer(modifier = Modifier.height(16.dp))
+                        
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Text(
+                                text = "You should try to:",
+                                style = MaterialTheme.typography.labelLarge,
+                                color = MaterialTheme.colorScheme.onBackground
                             )
-                        ) {
-                            Text("Done")
+                            Text(
+                                text = targetActivity.name,
+                                style = MaterialTheme.typography.displaySmall,
+                                textAlign = TextAlign.Center,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onBackground
+                            )
                         }
-                        Button(
-                            onClick = {
-                                scope.launch {
-                                    isLoading = true
-                                    delay(800)
-                                    currentActivity = ActivityRepository.getRecommendation(checkIn, profile)
-                                    isLoading = false
-                                }
-                            },
-                            modifier = Modifier.fillMaxWidth().height(56.dp),
-                            shape = MaterialTheme.shapes.large,
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = Color.White,
-                                contentColor = Color(0xFF2D2D2D)
-                            )
-                        ) {
-                            Text("Try Another Idea")
+
+                        RecommendationCard(title = "Why it fits", content = targetActivity.whyFits)
+                        RecommendationCard(title = "First Step", content = targetActivity.firstStep)
+
+                        Spacer(modifier = Modifier.weight(1f))
+
+                        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                            Button(
+                                onClick = {
+                                    missionManager.completeGoalMission()
+                                    onDone()
+                                },
+                                modifier = Modifier.fillMaxWidth().height(56.dp),
+                                shape = MaterialTheme.shapes.large,
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = MaterialTheme.colorScheme.primary,
+                                    contentColor = Color.White
+                                )
+                            ) {
+                                Text("Done")
+                            }
+                            Button(
+                                onClick = {
+                                    scope.launch {
+                                        isLoading = true
+                                        delay(800)
+                                        currentActivity = ActivityRepository.getRecommendation(checkIn, profile)
+                                        isLoading = false
+                                    }
+                                },
+                                modifier = Modifier.fillMaxWidth().height(56.dp),
+                                shape = MaterialTheme.shapes.large,
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = Color.White,
+                                    contentColor = Color(0xFF2D2D2D)
+                                )
+                            ) {
+                                Text("Try Another Idea")
+                            }
                         }
                     }
                 }

@@ -24,4 +24,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "GoalApp"
 include(":app")
- 
+include(":server")
