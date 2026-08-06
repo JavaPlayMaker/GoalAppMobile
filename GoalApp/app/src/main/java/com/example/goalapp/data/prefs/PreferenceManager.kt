@@ -33,6 +33,26 @@ class PreferenceManager(context: Context) {
         private const val KEY_GOAL_MISSION_COMPLETED = "goal_mission_completed"
         private const val KEY_MY_STATS = "my_stats"
         private const val KEY_LEARN_PAGE_UNLOCKED = "learn_page_unlocked"
+        private const val KEY_JOURNAL_ENTRIES = "journal_entries"
+    }
+
+    fun saveJournalLocally(date: String, content: String) {
+        val entries = getLocalJournalEntries().toMutableMap()
+        entries[date] = content
+        prefs.edit { putString(KEY_JOURNAL_ENTRIES, Json.encodeToString(entries)) }
+    }
+
+    fun getLocalJournalEntry(date: String): String? {
+        return getLocalJournalEntries()[date]
+    }
+
+    private fun getLocalJournalEntries(): Map<String, String> {
+        val json = prefs.getString(KEY_JOURNAL_ENTRIES, "{}") ?: "{}"
+        return try {
+            Json.decodeFromString(json)
+        } catch (e: Exception) {
+            emptyMap()
+        }
     }
 
     fun getTotalPoints(): Int = prefs.getInt(KEY_TOTAL_POINTS, 0)

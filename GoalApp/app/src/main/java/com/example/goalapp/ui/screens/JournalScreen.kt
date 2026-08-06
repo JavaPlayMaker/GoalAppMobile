@@ -1,6 +1,7 @@
 package com.example.goalapp.ui.screens
 
 import androidx.compose.ui.graphics.Color
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -37,19 +38,22 @@ fun JournalScreen(onBack: () -> Unit) {
     var journalText by remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(false) }
     
-    val journalEntries = remember { mutableStateMapOf<String, String>() }
     val selectedDateMillis = datePickerState.selectedDateMillis ?: System.currentTimeMillis()
     val selectedDateKey = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date(selectedDateMillis))
     
-    // Load entry from server when date changes
+    // Load entry from server or local when date changes
     LaunchedEffect(selectedDateKey) {
         isLoading = true
         try {
             val response = LocalBridgeClient.getJournalEntry("simulated-user-id", selectedDateKey)
-            journalText = response ?: ""
-            journalEntries[selectedDateKey] = journalText
+            if (response != null) {
+                journalText = response
+                preferenceManager.saveJournalLocally(selectedDateKey, response)
+            } else {
+                journalText = preferenceManager.getLocalJournalEntry(selectedDateKey) ?: ""
+            }
         } catch (e: Exception) {
-            journalText = journalEntries[selectedDateKey] ?: ""
+            journalText = preferenceManager.getLocalJournalEntry(selectedDateKey) ?: ""
         } finally {
             isLoading = false
         }
@@ -195,7 +199,7 @@ fun JournalScreen(onBack: () -> Unit) {
                     
                     TextButton(
                         onClick = { 
-                            journalEntries[selectedDateKey] = journalText
+                            preferenceManager.saveJournalLocally(selectedDateKey, journalText)
                             showDatePicker = true 
                         },
                         colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.onBackground)
@@ -209,27 +213,28 @@ fun JournalScreen(onBack: () -> Unit) {
                         onClick = {
                             isLoading = true
                             scope.launch {
-                                try {
-                                    val customerId = "simulated-user-id"
-                                    LocalBridgeClient.saveJournalEntry(
-                                        JournalEntry(
-                                            customer_id = customerId,
-                                            content = journalText,
-                                            entry_date = selectedDateKey
-                                        )
+                                val customerId = "simulated-user-id"
+                                // Always save locally first to avoid data loss
+                                preferenceManager.saveJournalLocally(selectedDateKey, journalText)
+                                
+                                val result = LocalBridgeClient.saveJournalEntry(
+                                    JournalEntry(
+                                        customer_id = customerId,
+                                        content = journalText,
+                                        entry_date = selectedDateKey
                                     )
-                                    journalEntries[selectedDateKey] = journalText
+                                )
+                                
+                                if (result.isSuccess) {
                                     missionManager.completeJournalMission()
                                     onBack()
-                                } catch (e: Exception) {
-                                    e.printStackTrace()
-                                    // Fallback for MVP if offline
-                                    journalEntries[selectedDateKey] = journalText
+                                } else {
+                                    // Handle failure - it's already saved locally
+                                    Log.e("JournalScreen", "Failed to save journal to server: ${result.exceptionOrNull()?.message}")
                                     missionManager.completeJournalMission()
                                     onBack()
-                                } finally {
-                                    isLoading = false
                                 }
+                                isLoading = false
                             }
                         },
                         enabled = !isLoading,
