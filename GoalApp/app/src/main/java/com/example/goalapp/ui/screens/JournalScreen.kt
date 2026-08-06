@@ -41,13 +41,18 @@ fun JournalScreen(onBack: () -> Unit) {
     val selectedDateMillis = datePickerState.selectedDateMillis ?: System.currentTimeMillis()
     val selectedDateKey = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date(selectedDateMillis))
     
-    // Load entries on start (Disabled for local bridge MVP to simplify)
-    LaunchedEffect(Unit) {
-        // In a real local bridge, you would fetch from your Ktor server here
-    }
-
+    // Load entry from server when date changes
     LaunchedEffect(selectedDateKey) {
-        journalText = journalEntries[selectedDateKey] ?: ""
+        isLoading = true
+        try {
+            val response = LocalBridgeClient.getJournalEntry("simulated-user-id", selectedDateKey)
+            journalText = response ?: ""
+            journalEntries[selectedDateKey] = journalText
+        } catch (e: Exception) {
+            journalText = journalEntries[selectedDateKey] ?: ""
+        } finally {
+            isLoading = false
+        }
     }
 
     Scaffold(

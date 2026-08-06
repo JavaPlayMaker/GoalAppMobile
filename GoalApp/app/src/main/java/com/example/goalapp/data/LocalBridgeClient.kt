@@ -9,8 +9,8 @@ import io.ktor.serialization.kotlinx.json.*
 import kotlinx.serialization.json.Json
 
 object LocalBridgeClient {
-    // --- REPLACE THIS WITH YOUR PC'S IP ADDRESS ---
-    private const val PC_IP = "192.168.1.XX" // Run 'ipconfig' in terminal
+
+    private const val PC_IP = ""
     private const val BASE_URL = "http://$PC_IP:8080"
 
     val httpClient = HttpClient(Android) {
