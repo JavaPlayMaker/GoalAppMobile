@@ -81,37 +81,52 @@ fun HomeScreen(
                 modifier = Modifier.padding(bottom = 32.dp)
             )
 
-            // 2x2 Grid Layout
+            // Primary Action: Goal (Prominent visibility for the app's main function)
+            HomeButton(
+                label = "Goal",
+                action = onGoal,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(140.dp)
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // Secondary Actions Grid
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                Column(
-                    modifier = Modifier.weight(1f),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    HomeButton(label = "Learn", action = onLearn)
-                    HomeButton(label = "Game", action = onGame)
-                }
-
-                Column(
-                    modifier = Modifier.weight(1f),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    HomeButton(label = "Goal", action = onGoal)
-                    HomeButton(label = "Journal", action = onJournal)
-                }
+                HomeButton(
+                    label = "Learn",
+                    action = onLearn,
+                    modifier = Modifier.weight(1f).height(90.dp)
+                )
+                HomeButton(
+                    label = "Game",
+                    action = onGame,
+                    modifier = Modifier.weight(1f).height(90.dp)
+                )
             }
             
-            Spacer(modifier = Modifier.weight(1f))
+            Spacer(modifier = Modifier.height(16.dp))
+            
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                HomeButton(
+                    label = "Journal",
+                    action = onJournal,
+                    modifier = Modifier.weight(1f).height(90.dp)
+                )
+                HomeButton(
+                    label = "My Stats",
+                    action = onMyStats,
+                    modifier = Modifier.weight(1f).height(90.dp)
+                )
+            }
 
-            HomeButton(
-                label = "My Stats",
-                action = onMyStats,
-                modifier = Modifier
-                    .padding(top = 24.dp)
-                    .height(56.dp)
-            )
         }
     }
 }

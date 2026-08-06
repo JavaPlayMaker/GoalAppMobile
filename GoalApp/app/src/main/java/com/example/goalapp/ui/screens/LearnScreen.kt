@@ -21,7 +21,7 @@ import com.example.goalapp.R
 import com.example.goalapp.data.MissionManager
 
 enum class LearnPage {
-    MAIN, HOW_TO_DEAL, TOPIC_DETAIL, ART_OF_ALONE, ADVANCED_TIPS
+    MAIN, HOW_TO_DEAL, ART_OF_ALONE, ADVANCED_TIPS, TOPIC_DETAIL
 }
 
 data class Topic(
@@ -30,7 +30,7 @@ data class Topic(
     val content: String,
 )
 
-val topics = listOf(
+val howToDealTopics = listOf(
     Topic(
         "Clean your room",
         "A tidy space leads to a tidy mind.",
@@ -58,12 +58,49 @@ val topics = listOf(
     )
 )
 
+val artOfAloneTopics = listOf(
+    Topic(
+        "Observe",
+        "Ground yourself in the present.",
+        "Find a quiet spot and simply notice. What sounds do you hear? What colors catch your eye? Observing without judging grounds you in the present and quietens the internal noise."
+    ),
+    Topic(
+        "Document",
+        "Understand your inner dialogue.",
+        "Keep a small notebook or use your journal. Write down one thought that usually passes you by. Capturing these fleeting moments helps you identify patterns in your thinking and emotions."
+    ),
+    Topic(
+        "Unplug",
+        "Find the stillness underneath.",
+        "Spend 10 minutes without any screens. No phone, no TV, no music. The initial restlessness is normal; sit with it until you find the stillness that exists when you aren't being constantly stimulated."
+    )
+)
+
+val advancedTipsTopics = listOf(
+    Topic(
+        "The 5-Minute Rule",
+        "Overcome procrastination instantly.",
+        "Whenever you feel overwhelmed by a task, commit to it for just 5 minutes. Often, the hardest part is starting. Once you break the seal, the flow state is much easier to reach."
+    ),
+    Topic(
+        "Digital Detox Rituals",
+        "Create intentional boundaries.",
+        "Instead of just 'unplugging', create a ritual. Light a candle, prepare a specific tea, or sit in a specific chair that is a 'no-phone zone'. Your brain will begin to associate these triggers with deep relaxation."
+    ),
+    Topic(
+        "Mindful Reflection",
+        "Master your emotional responses.",
+        "At the end of each day, don't just record what happened. Record how you reacted. Identifying patterns in your emotional response is the first step toward masterfully navigating your own mind."
+    )
+)
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LearnScreen(onBack: () -> Unit, onDone: () -> Unit = {}) {
     val context = LocalContext.current
     val missionManager = remember { MissionManager(context) }
     var currentPage by remember { mutableStateOf(LearnPage.MAIN) }
+    var previousPage by remember { mutableStateOf(LearnPage.MAIN) }
     var selectedTopic by remember { mutableStateOf<Topic?>(null) }
     var isUnlocked by remember { mutableStateOf(missionManager.isLearnPageUnlocked()) }
     var showUnlockError by remember { mutableStateOf(false) }
@@ -88,10 +125,8 @@ fun LearnScreen(onBack: () -> Unit, onDone: () -> Unit = {}) {
                     IconButton(onClick = {
                         when (currentPage) {
                             LearnPage.MAIN -> onBack()
-                            LearnPage.HOW_TO_DEAL -> currentPage = LearnPage.MAIN
-                            LearnPage.TOPIC_DETAIL -> currentPage = LearnPage.HOW_TO_DEAL
-                            LearnPage.ART_OF_ALONE -> currentPage = LearnPage.MAIN
-                            LearnPage.ADVANCED_TIPS -> currentPage = LearnPage.MAIN
+                            LearnPage.TOPIC_DETAIL -> currentPage = previousPage
+                            else -> currentPage = LearnPage.MAIN
                         }
                     }) {
                         Icon(
@@ -115,23 +150,22 @@ fun LearnScreen(onBack: () -> Unit, onDone: () -> Unit = {}) {
         ) {
             when (currentPage) {
                 LearnPage.MAIN -> MainLearnMenu { currentPage = it }
-                LearnPage.HOW_TO_DEAL -> HowToDealMenu {
+                LearnPage.HOW_TO_DEAL -> TopicListMenu("Strategies for Solitude", howToDealTopics) {
                     selectedTopic = it
+                    previousPage = LearnPage.HOW_TO_DEAL
                     currentPage = LearnPage.TOPIC_DETAIL
                 }
-                LearnPage.TOPIC_DETAIL -> TopicDetailView(selectedTopic) { 
-                    onDone()
-                    currentPage = LearnPage.HOW_TO_DEAL 
-                }
-                LearnPage.ART_OF_ALONE -> ArtOfAloneView {
-                    onDone()
-                    currentPage = LearnPage.MAIN
+                LearnPage.ART_OF_ALONE -> TopicListMenu("Mastering Solitude", artOfAloneTopics) {
+                    selectedTopic = it
+                    previousPage = LearnPage.ART_OF_ALONE
+                    currentPage = LearnPage.TOPIC_DETAIL
                 }
                 LearnPage.ADVANCED_TIPS -> {
                     if (isUnlocked) {
-                        AdvancedTipsView {
-                            onDone()
-                            currentPage = LearnPage.MAIN
+                        TopicListMenu("Advanced Daily Tips", advancedTipsTopics) {
+                            selectedTopic = it
+                            previousPage = LearnPage.ADVANCED_TIPS
+                            currentPage = LearnPage.TOPIC_DETAIL
                         }
                     } else {
                         LockedContentView(
@@ -147,6 +181,10 @@ fun LearnScreen(onBack: () -> Unit, onDone: () -> Unit = {}) {
                             }
                         )
                     }
+                }
+                LearnPage.TOPIC_DETAIL -> TopicDetailView(selectedTopic) { 
+                    onDone()
+                    currentPage = previousPage 
                 }
             }
 
@@ -257,52 +295,6 @@ fun LockedContentView(pointsRequired: Int, userPoints: Int, onUnlock: () -> Unit
 }
 
 @Composable
-fun AdvancedTipsView(onDone: () -> Unit) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(24.dp)
-            .verticalScroll(rememberScrollState()),
-        verticalArrangement = Arrangement.spacedBy(24.dp)
-    ) {
-        Text(
-            text = "Welcome to the Inner Circle. These advanced techniques help you thrive in solitude.",
-            style = MaterialTheme.typography.titleLarge,
-            color = Color.White
-        )
-
-        ArtOfAloneItem(
-            title = "The 5-Minute Rule",
-            content = "Whenever you feel overwhelmed by a task, commit to it for just 5 minutes. Often, the hardest part is starting. Once you break the seal, the flow state is much easier to reach."
-        )
-
-        ArtOfAloneItem(
-            title = "Digital Detox Rituals",
-            content = "Instead of just 'unplugging', create a ritual. Light a candle, prepare a specific tea, or sit in a specific chair that is a 'no-phone zone'. Your brain will begin to associate these triggers with deep relaxation."
-        )
-
-        ArtOfAloneItem(
-            title = "Mindful Reflection",
-            content = "At the end of each day, don't just record what happened. Record how you reacted. Identifying patterns in your emotional response is the first step toward masterfully navigating your own mind."
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Button(
-            onClick = onDone,
-            modifier = Modifier.fillMaxWidth().height(56.dp),
-            shape = MaterialTheme.shapes.large,
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = Color.White
-            )
-        ) {
-            Text("Complete Masterclass")
-        }
-    }
-}
-
-@Composable
 fun LearnCard(title: String, description: String, imageRes: Int, onClick: () -> Unit) {
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -336,7 +328,7 @@ fun LearnCard(title: String, description: String, imageRes: Int, onClick: () -> 
 }
 
 @Composable
-fun HowToDealMenu(onSelectTopic: (Topic) -> Unit) {
+fun TopicListMenu(title: String, topicList: List<Topic>, onSelectTopic: (Topic) -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -346,13 +338,13 @@ fun HowToDealMenu(onSelectTopic: (Topic) -> Unit) {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Strategies for Solitude",
+            text = title,
             style = MaterialTheme.typography.titleLarge,
             color = Color.White,
             modifier = Modifier.padding(bottom = 8.dp)
         )
 
-        topics.forEach { topic ->
+        topicList.forEach { topic ->
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 onClick = { onSelectTopic(topic) },
@@ -389,9 +381,9 @@ fun TopicDetailView(topic: Topic?, onDone: () -> Unit) {
                 lineHeight = 28.sp,
                 color = Color.White
             )
-            
+
             Spacer(modifier = Modifier.height(32.dp))
-            
+
             Text(
                 text = "Small steps make a big difference.",
                 style = MaterialTheme.typography.labelMedium,
@@ -412,60 +404,6 @@ fun TopicDetailView(topic: Topic?, onDone: () -> Unit) {
                 Text("Done")
             }
         }
-    }
-}
-
-@Composable
-fun ArtOfAloneView(onDone: () -> Unit) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(24.dp)
-            .verticalScroll(rememberScrollState()),
-        verticalArrangement = Arrangement.spacedBy(24.dp)
-    ) {
-        Text(
-            text = "Solitude is an opportunity to reconnect with the most important person in your life: yourself.",
-            style = MaterialTheme.typography.titleLarge,
-            color = Color.White
-        )
-
-        ArtOfAloneItem(
-            title = "1. Observe",
-            content = "Find a quiet spot and simply notice. What sounds do you hear? What colors catch your eye? Observing without judging grounds you in the present."
-        )
-
-        ArtOfAloneItem(
-            title = "2. Document",
-            content = "Keep a small notebook or use your journal. Write down one thought that usually passes you by. Capturing these fleeting moments helps you understand your inner dialogue."
-        )
-
-        ArtOfAloneItem(
-            title = "3. Unplug",
-            content = "Spend 10 minutes without any screens. No phone, no TV, no music. The initial restlessness is normal; sit with it until you find the stillness underneath."
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Button(
-            onClick = onDone,
-            modifier = Modifier.fillMaxWidth().height(56.dp),
-            shape = MaterialTheme.shapes.large,
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = Color.White
-            )
-        ) {
-            Text("Done")
-        }
-    }
-}
-
-@Composable
-fun ArtOfAloneItem(title: String, content: String) {
-    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        Text(text = title, style = MaterialTheme.typography.titleMedium, color = Color.White, fontWeight = androidx.compose.ui.text.font.FontWeight.Bold)
-        Text(text = content, style = MaterialTheme.typography.bodyLarge, color = Color.White, lineHeight = 24.sp)
     }
 }
 

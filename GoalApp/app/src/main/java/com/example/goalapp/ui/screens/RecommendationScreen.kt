@@ -51,7 +51,7 @@ fun RecommendationScreen(
         topBar = {
             @OptIn(ExperimentalMaterial3Api::class)
             TopAppBar(
-                title = { Text("Suggestion", color = MaterialTheme.colorScheme.onBackground) },
+                title = { Text("Your Goal", color = MaterialTheme.colorScheme.onBackground) },
                 navigationIcon = {
                     IconButton(onClick = onDone) {
                         Icon(
