@@ -5,6 +5,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
+import com.example.goalapp.data.prefs.PreferenceManager
 
 private val DarkColorScheme = darkColorScheme(
     primary = AppBlue,
@@ -50,7 +53,17 @@ fun GoalAppTheme(
     dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
-    val colorScheme = if (darkTheme) DarkColorScheme else LightColorScheme
+    val context = LocalContext.current
+    val preferenceManager = remember { PreferenceManager(context) }
+    val themeMode = preferenceManager.getThemeMode()
+    
+    val useDarkTheme = when (themeMode) {
+        1 -> false // Light
+        2 -> true  // Dark
+        else -> darkTheme // System
+    }
+
+    val colorScheme = if (useDarkTheme) DarkColorScheme else LightColorScheme
     // Ignoring dynamicColor to maintain strict design system as requested
 
     MaterialTheme(

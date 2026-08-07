@@ -229,7 +229,35 @@ fun GoalAppNavigation() {
         }
         
         composable("settings") {
-            SettingsScreen(onBack = { navController.popBackStack() })
+            SettingsScreen(
+                onBack = { navController.popBackStack() },
+                onLogout = {
+                    preferenceManager.clearAll()
+                    userProfile = null
+                    navController.navigate("onboarding") {
+                        popUpTo(0) { inclusive = true }
+                    }
+                },
+                onDeleteAccount = {
+                    // Logic to delete account data (for MVP same as logout + clear)
+                    preferenceManager.clearAll()
+                    userProfile = null
+                    navController.navigate("onboarding") {
+                        popUpTo(0) { inclusive = true }
+                    }
+                },
+                onFeedback = { navController.navigate("feedback") },
+                onTerms = { navController.navigate("terms") },
+                onPrivacy = { navController.navigate("privacy") }
+            )
+        }
+
+        composable("terms") {
+            TermsOfServiceScreen(onBack = { navController.popBackStack() })
+        }
+
+        composable("privacy") {
+            PrivacyPolicyScreen(onBack = { navController.popBackStack() })
         }
 
         composable("feedback") {
