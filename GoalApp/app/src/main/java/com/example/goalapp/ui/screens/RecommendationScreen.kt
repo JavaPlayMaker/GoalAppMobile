@@ -1,5 +1,6 @@
 package com.example.goalapp.ui.screens
 
+import android.widget.Toast
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -12,6 +13,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -22,9 +24,9 @@ import com.example.goalapp.data.SocialPreference
 import com.example.goalapp.data.UserCheckIn
 import com.example.goalapp.data.UserProfile
 import com.example.goalapp.data.GoalActivity
-import com.example.goalapp.data.ActivityRepository
 import com.example.goalapp.data.TimeAvailable
-import com.example.goalapp.data.MissionManager
+import com.example.goalapp.data.MainRepository
+import com.example.goalapp.data.ActivityLog
 import com.example.goalapp.ui.components.LoadingOverlay
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -35,14 +37,14 @@ fun RecommendationScreen(
     profile: UserProfile,
     onDone: () -> Unit
 ) {
-    val context = androidx.compose.ui.platform.LocalContext.current
-    val missionManager = remember { MissionManager(context) }
+    val context = LocalContext.current
+    val repository = remember { MainRepository(context) }
     var currentActivity by remember { mutableStateOf<GoalActivity?>(null) }
     var isLoading by remember { mutableStateOf(true) }
     val scope = rememberCoroutineScope()
 
     LaunchedEffect(checkIn, profile) {
-        currentActivity = ActivityRepository.getRecommendation(checkIn, profile)
+        currentActivity = repository.getSuggestedGoal(checkIn)
         isLoading = false
     }
 
@@ -109,8 +111,22 @@ fun RecommendationScreen(
                         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                             Button(
                                 onClick = {
-                                    missionManager.completeGoalMission()
-                                    onDone()
+                                    scope.launch {
+                                        isLoading = true
+                                        // Log the activity and award points
+                                        repository.logActivity(
+                                            ActivityLog(
+                                                name = targetActivity.name,
+                                                category = targetActivity.category,
+                                                startTime = System.currentTimeMillis(),
+                                                endTime = System.currentTimeMillis(), // Instant for MVP
+                                                moodBefore = checkIn.mood,
+                                                pointsEarned = 50
+                                            )
+                                        )
+                                        Toast.makeText(context, "Completed! +50 points", Toast.LENGTH_SHORT).show()
+                                        onDone()
+                                    }
                                 },
                                 modifier = Modifier.fillMaxWidth().height(56.dp),
                                 shape = MaterialTheme.shapes.large,
@@ -119,23 +135,20 @@ fun RecommendationScreen(
                                     contentColor = Color.White
                                 )
                             ) {
-                                Text("Done")
+                                Text("Mark as Done (+50 pts)")
                             }
-                            Button(
+                            
+                            OutlinedButton(
                                 onClick = {
                                     scope.launch {
                                         isLoading = true
-                                        delay(800)
-                                        currentActivity = ActivityRepository.getRecommendation(checkIn, profile)
+                                        delay(500)
+                                        currentActivity = repository.getSuggestedGoal(checkIn)
                                         isLoading = false
                                     }
                                 },
                                 modifier = Modifier.fillMaxWidth().height(56.dp),
-                                shape = MaterialTheme.shapes.large,
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = Color.White,
-                                    contentColor = Color(0xFF2D2D2D)
-                                )
+                                shape = MaterialTheme.shapes.large
                             ) {
                                 Text("Try Another Idea")
                             }
@@ -156,22 +169,20 @@ fun RecommendationCard(title: String, content: String) {
     Card(
         shape = MaterialTheme.shapes.large,
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primary,
-            contentColor = Color.White
+            containerColor = MaterialTheme.colorScheme.secondaryContainer,
+            contentColor = MaterialTheme.colorScheme.onSecondaryContainer
         )
     ) {
-        Column(modifier = Modifier.padding(20.dp)) {
+        Column(modifier = Modifier.padding(20.dp).fillMaxWidth()) {
             Text(
                 text = title,
                 style = MaterialTheme.typography.titleSmall,
-                fontWeight = FontWeight.Bold,
-                color = Color.White
+                fontWeight = FontWeight.Bold
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
                 text = content,
-                style = MaterialTheme.typography.bodyMedium,
-                color = Color.White
+                style = MaterialTheme.typography.bodyMedium
             )
         }
     }

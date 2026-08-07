@@ -77,7 +77,7 @@ fun SettingsScreen(onBack: () -> Unit) {
             HorizontalDivider()
 
             Text(text = "Notifications", style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.primary)
-            
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -120,7 +120,7 @@ fun SettingsScreen(onBack: () -> Unit) {
                     }
                 )
             }
-            
+
             if (journalReminderEnabled) {
                 OutlinedButton(
                     onClick = showTimePicker,

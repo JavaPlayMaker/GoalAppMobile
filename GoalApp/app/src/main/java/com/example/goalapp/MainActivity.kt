@@ -9,12 +9,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.*
 import androidx.navigation.navArgument
 import androidx.compose.ui.platform.LocalContext
-import com.example.goalapp.data.EnergyLevel
-import com.example.goalapp.data.Mood
-import com.example.goalapp.data.SocialPreference
-import com.example.goalapp.data.TimeAvailable
-import com.example.goalapp.data.UserCheckIn
-import com.example.goalapp.data.UserProfile
+import com.example.goalapp.data.*
 import com.example.goalapp.data.prefs.PreferenceManager
 import com.example.goalapp.notifications.NotificationHelper
 import com.example.goalapp.ui.screens.*
@@ -43,6 +38,9 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun GoalAppNavigation() {
     val context = LocalContext.current
+    val repository = remember { MainRepository(context) }
+    val userStats by repository.userStats.collectAsState(initial = UserStats())
+    
     val preferenceManager = remember { PreferenceManager(context) }
     val navController = rememberNavController()
     var lastCheckIn by remember { mutableStateOf<UserCheckIn?>(null) }
@@ -137,6 +135,7 @@ fun GoalAppNavigation() {
         
         composable("home") {
             HomeScreen(
+                userStats = userStats,
                 onLearn = { navController.navigate("learn") },
                 onGoal = { 
                     lastCheckIn = UserCheckIn(

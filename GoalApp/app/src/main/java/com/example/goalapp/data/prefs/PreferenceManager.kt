@@ -34,7 +34,23 @@ class PreferenceManager(context: Context) {
         private const val KEY_MY_STATS = "my_stats"
         private const val KEY_LEARN_PAGE_UNLOCKED = "learn_page_unlocked"
         private const val KEY_JOURNAL_ENTRIES = "journal_entries"
+        private const val KEY_THEME_MODE = "theme_mode" // 0: System, 1: Light, 2: Dark
+        private const val KEY_BIOMETRIC_ENABLED = "biometric_enabled"
+        private const val KEY_QUIET_HOURS_ENABLED = "quiet_hours_enabled"
     }
+
+    fun clearAll() {
+        prefs.edit { clear() }
+    }
+
+    fun getThemeMode(): Int = prefs.getInt(KEY_THEME_MODE, 0)
+    fun setThemeMode(mode: Int) = prefs.edit { putInt(KEY_THEME_MODE, mode) }
+
+    fun isBiometricEnabled(): Boolean = prefs.getBoolean(KEY_BIOMETRIC_ENABLED, false)
+    fun setBiometricEnabled(enabled: Boolean) = prefs.edit { putBoolean(KEY_BIOMETRIC_ENABLED, enabled) }
+
+    fun isQuietHoursEnabled(): Boolean = prefs.getBoolean(KEY_QUIET_HOURS_ENABLED, false)
+    fun setQuietHoursEnabled(enabled: Boolean) = prefs.edit { putBoolean(KEY_QUIET_HOURS_ENABLED, enabled) }
 
     fun saveJournalLocally(date: String, content: String) {
         val entries = getLocalJournalEntries().toMutableMap()
